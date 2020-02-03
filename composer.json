@@ -1,0 +1,36 @@
+{
+    "name": "tomk79/rencon",
+    "description": "",
+    "version": "0.0.1-alpha.1+dev",
+    "keywords": [],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tomoya Koyanagi",
+            "email": "tomk79@gmail.com"
+        }
+    ],
+    "scripts":{
+        "build": [
+            "php ./build/build.php"
+        ],
+        "test": [
+            "php ./vendor/phpunit/phpunit/phpunit"
+        ]
+    } ,
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "repositories": [
+    ],
+    "require": {
+        "php": ">=5.4.0" ,
+        "ext-pdo": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.1.0"
+    },
+    "autoload": {
+        "files": [
+        ]
+    }
+}
