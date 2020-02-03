@@ -45,6 +45,7 @@ class builder{
 		$this->append_src_file( 'rencon/theme.php' );
 		$this->append_src_file( 'rencon/login.php' );
 		$this->append_src_file( 'rencon/request.php' );
+		$this->append_src_file( 'rencon/dbh.php' );
 		$this->append_apps();
 		$this->append_resourceMgr();
 
@@ -81,9 +82,24 @@ class builder{
 		$this->append_src(''."\n");
 		$this->append_src('$conf = new stdClass();'."\n");
 		$this->append_src(''."\n");
+		$this->append_src('/*'."\n");
+		$this->append_src('ログインユーザーのIDとパスワードの対を設定します。'."\n");
+		$this->append_src('*/'."\n");
 		$this->append_src('$conf->users = array('."\n");
 		$this->append_src('	"admin" => sha1("admin"),'."\n");
 		$this->append_src(');'."\n");
+		$this->append_src(''."\n");
+		$this->append_src('/*'."\n");
+		$this->append_src('データベースの接続情報を設定します。'."\n");
+		$this->append_src('*/'."\n");
+		$this->append_src('$conf->databases = array('."\n");
+		$this->append_src('	"main" => array('."\n");
+		$this->append_src('	),'."\n");
+		$this->append_src(');'."\n");
+		$this->append_src(''."\n");
+		$this->append_src(''."\n");
+		$this->append_src(''."\n");
+		$this->append_src(''."\n");
 		$this->append_src(''."\n");
 		$this->append_src('$rencon = new rencon($conf);'."\n");
 		$this->append_src('$rencon->execute();'."\n");

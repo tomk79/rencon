@@ -2,14 +2,29 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-03T16:27:29+00:00 --
+  -- developers preview build @2020-02-03T16:48:47+00:00 --
 --------------------- */
 
 $conf = new stdClass();
 
+/*
+ログインユーザーのIDとパスワードの対を設定します。
+*/
 $conf->users = array(
 	"admin" => sha1("admin"),
 );
+
+/*
+データベースの接続情報を設定します。
+*/
+$conf->databases = array(
+	"main" => array(
+	),
+);
+
+
+
+
 
 $rencon = new rencon($conf);
 $rencon->execute();
@@ -1050,6 +1065,47 @@ class rencon_request{
 		return $rtn;
 	}//get_path_current_dir()
 
+}
+?>
+<?php
+/**
+ * rencon dbh class
+ *
+ * @author Tomoya Koyanagi <tomk79@gmail.com>
+ */
+class rencon_dbh{
+	private $pdo;
+	private $rencon;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct( $rencon ){
+		$this->rencon = $rencon;
+	}
+
+	/**
+	 * PDOが有効か調べる
+	 */
+	public function is_pdo_enabled(){
+		if( !class_exists('\\PDO') ){
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * データベースに接続する
+	 */
+	public function connect( $database_setting ){
+		$this->pdo = new \PDO(
+			'sqlite:'.'./database.sqlite',
+			null, null,
+			array(
+				\PDO::ATTR_PERSISTENT => false, // ←これをtrueにすると、"持続的な接続" になる
+			)
+		);
+	}
 }
 ?>
 <?php

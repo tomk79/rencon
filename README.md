@@ -15,7 +15,7 @@
         <a href="https://travis-ci.org/tomk79/rencon"><img src="https://secure.travis-ci.org/tomk79/rencon.svg?branch=master"></a>
       </td>
       <td style="text-align:center;">
-        <a href="https://ci.appveyor.com/project/tomk79/rencon"><img src="https://ci.appveyor.com/api/projects/status/bq8v3bgfrhbvr6rv/branch/master?svg=true"></a>
+        <a href="https://ci.appveyor.com/project/tomk79/rencon"><img src="https://ci.appveyor.com/api/projects/status/2wk7okn32pmlin8w/branch/master?svg=true"></a>
       </td>
     </tr>
     <tr>
@@ -24,7 +24,7 @@
         <a href="https://travis-ci.org/tomk79/rencon"><img src="https://secure.travis-ci.org/tomk79/rencon.svg?branch=develop"></a>
       </td>
       <td style="text-align:center;">
-        <a href="https://ci.appveyor.com/project/tomk79/rencon"><img src="https://ci.appveyor.com/api/projects/status/bq8v3bgfrhbvr6rv/branch/develop?svg=true"></a>
+        <a href="https://ci.appveyor.com/project/tomk79/rencon"><img src="https://ci.appveyor.com/api/projects/status/2wk7okn32pmlin8w/branch/develop?svg=true"></a>
       </td>
     </tr>
   </tbody>
