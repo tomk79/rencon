@@ -41,9 +41,11 @@ class builder{
 
 		$this->initialize_rencon();
 		$this->append_src_file( 'rencon.php' );
+		$this->append_src_file( 'rencon/router.php' );
 		$this->append_src_file( 'rencon/theme.php' );
 		$this->append_src_file( 'rencon/login.php' );
 		$this->append_src_file( 'rencon/request.php' );
+		$this->append_apps();
 		$this->append_resourceMgr();
 
 		echo ''."\n";
@@ -114,6 +116,38 @@ class builder{
 		$code = str_replace($metakeyword, implode("", $list), $code);
 
 		return $this->append_src($code);
+	}
+
+	private function append_apps(){
+		$view_code = file_get_contents( $this->realpath_proj_src.'rencon/view.php' );
+
+		$metakeyword = '/** {$viewList} **/';
+
+		$realpath_target_dir = realpath( __DIR__.'/../src/rencon/apps/' ).'/';
+		$apps = scandir($realpath_target_dir);
+		$list = array();
+		foreach($apps as $appName){
+			if( $appName == '.' || $appName == '..' ){ continue; }
+			$this->append_src_file( 'rencon/apps/'.urlencode($appName).'/ctrl.php' );
+			$viewFiles = scandir($realpath_target_dir.$appName.'/views/');
+			foreach($viewFiles as $viewFile){
+				if( $viewFile == '.' || $viewFile == '..' ){ continue; }
+				$actName = preg_replace( '/\..*$/', '', $viewFile );
+				$src = '';
+				$src .= 'if( $app == '.var_export($appName,true).' && $act == '.var_export($actName,true).' ){'."\n";
+				$src .= 'ob_start(); ?'.'>';
+				$src .= file_get_contents($realpath_target_dir.$appName.'/views/'.$viewFile);
+				$src .= '<'.'?php ';
+				$src .= 'return ob_get_clean();'."\n";
+				$src .= '}'."\n";
+				$list[] = $src;
+			}
+
+		}
+
+		$view_code = str_replace($metakeyword, implode("", $list), $view_code);
+
+		return $this->append_src($view_code);
 	}
 
 	private function append_src_file( $path ){

@@ -8,6 +8,8 @@ class rencon{
 	private $conf;
 	private $theme;
 	private $resourceMgr;
+	private $request;
+	private $view;
 
 	/**
 	 * Constructor
@@ -17,6 +19,7 @@ class rencon{
 		$this->theme = new rencon_theme($this);
 		$this->resourceMgr = new rencon_resourceMgr($this);
 		$this->request = new rencon_request();
+		$this->view = new rencon_view($this);
 	}
 
 	/**
@@ -27,6 +30,8 @@ class rencon{
 			$this->resourceMgr->echo_resource( $this->request->get_param('res') );
 			return;
 		}
+
+		header('Content-type: text/html'); // default
 
 		$login = new rencon_login($this);
 		if( !$login->check() ){
@@ -43,11 +48,19 @@ class rencon{
 			exit;
 
 		}elseif( !strlen($action) ){
-			header('Content-type: text/html');
 			$this->theme->set_h1('ホーム');
-			echo $this->theme->bind('<p>ホーム画面</p>');
+			ob_start(); ?>
+<ul>
+	<li><a href="?a=db">データベース管理</a></li>
+	<li><a href="?a=files">ファイルとフォルダ</a></li>
+</ul>
+<?php
+			echo $this->theme->bind( ob_get_clean() );
 			exit;
 		}
+
+		$router = new rencon_router($this);
+		$router->route();
 
 		$this->notfound();
 		exit;
@@ -81,7 +94,16 @@ class rencon{
 	 */
 	public function action(){
 		$action = $this->request->get_param('a');
-		return $action;
+		if( !strlen($action) ){
+			return '';
+		}
+		$action_ary = explode('.', $action);
+		if( count($action_ary) == 1 ){
+			$action_ary[1] = 'index';
+		}elseif( array_key_exists(1, $action_ary) && !strlen($action_ary[1]) ){
+			$action_ary[1] = 'index';
+		}
+		return implode('.', $action_ary);
 	}
 
 	/**
@@ -106,6 +128,20 @@ class rencon{
 	 */
 	public function req(){
 		return $this->request;
+	}
+
+	/**
+	 * Theme Object
+	 */
+	public function theme(){
+		return $this->theme;
+	}
+
+	/**
+	 * View Object
+	 */
+	public function view(){
+		return $this->view;
 	}
 }
 ?>

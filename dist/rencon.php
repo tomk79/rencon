@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-03T15:16:52+00:00 --
+  -- developers preview build @2020-02-03T16:27:29+00:00 --
 --------------------- */
 
 $conf = new stdClass();
@@ -25,6 +25,8 @@ class rencon{
 	private $conf;
 	private $theme;
 	private $resourceMgr;
+	private $request;
+	private $view;
 
 	/**
 	 * Constructor
@@ -34,6 +36,7 @@ class rencon{
 		$this->theme = new rencon_theme($this);
 		$this->resourceMgr = new rencon_resourceMgr($this);
 		$this->request = new rencon_request();
+		$this->view = new rencon_view($this);
 	}
 
 	/**
@@ -44,6 +47,8 @@ class rencon{
 			$this->resourceMgr->echo_resource( $this->request->get_param('res') );
 			return;
 		}
+
+		header('Content-type: text/html'); // default
 
 		$login = new rencon_login($this);
 		if( !$login->check() ){
@@ -60,11 +65,19 @@ class rencon{
 			exit;
 
 		}elseif( !strlen($action) ){
-			header('Content-type: text/html');
 			$this->theme->set_h1('ホーム');
-			echo $this->theme->bind('<p>ホーム画面</p>');
+			ob_start(); ?>
+<ul>
+	<li><a href="?a=db">データベース管理</a></li>
+	<li><a href="?a=files">ファイルとフォルダ</a></li>
+</ul>
+<?php
+			echo $this->theme->bind( ob_get_clean() );
 			exit;
 		}
+
+		$router = new rencon_router($this);
+		$router->route();
 
 		$this->notfound();
 		exit;
@@ -98,7 +111,16 @@ class rencon{
 	 */
 	public function action(){
 		$action = $this->request->get_param('a');
-		return $action;
+		if( !strlen($action) ){
+			return '';
+		}
+		$action_ary = explode('.', $action);
+		if( count($action_ary) == 1 ){
+			$action_ary[1] = 'index';
+		}elseif( array_key_exists(1, $action_ary) && !strlen($action_ary[1]) ){
+			$action_ary[1] = 'index';
+		}
+		return implode('.', $action_ary);
 	}
 
 	/**
@@ -124,6 +146,63 @@ class rencon{
 	public function req(){
 		return $this->request;
 	}
+
+	/**
+	 * Theme Object
+	 */
+	public function theme(){
+		return $this->theme;
+	}
+
+	/**
+	 * View Object
+	 */
+	public function view(){
+		return $this->view;
+	}
+}
+?>
+<?php
+/**
+ * rencon router class
+ *
+ * @author Tomoya Koyanagi <tomk79@gmail.com>
+ */
+class rencon_router{
+	private $rencon;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct( $rencon ){
+		$this->rencon = $rencon;
+	}
+
+	/**
+	 * ルーティング
+	 */
+	public function route(){
+		$action = $this->rencon->action();
+		$action_ary = explode('.', $action);
+
+		$app = $action_ary[0];
+		$act = $action_ary[1];
+
+		if( !strlen($app) ){
+			return false;
+		}
+
+		$className = 'rencon_apps_'.$app.'_ctrl';
+		if( class_exists( $className ) ){
+			$appObj = new $className( $this->rencon );
+			if( method_exists($appObj, $act) ){
+				return $appObj->$act();
+			}
+		}
+
+		return false;
+	}
+
 }
 ?>
 <?php
@@ -970,6 +1049,135 @@ class rencon_request{
 		$rtn .= ($rtn!='/'?'/':'');
 		return $rtn;
 	}//get_path_current_dir()
+
+}
+?>
+<?php
+/**
+ * rencon app
+ *
+ * @author Tomoya Koyanagi <tomk79@gmail.com>
+ */
+class rencon_apps_db_ctrl{
+	private $rencon;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct( $rencon ){
+		$this->rencon = $rencon;
+	}
+
+	/**
+	 * デフォルトアクション
+	 */
+	public function index(){
+		$this->rencon->theme()->set_h1('データベース管理');
+		echo $this->rencon->theme()->bind(
+			$this->rencon->view()->bind()
+		);
+		exit;
+	}
+
+}
+?>
+<?php
+/**
+ * rencon app
+ *
+ * @author Tomoya Koyanagi <tomk79@gmail.com>
+ */
+class rencon_apps_files_ctrl{
+	private $rencon;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct( $rencon ){
+		$this->rencon = $rencon;
+	}
+
+	/**
+	 * デフォルトアクション
+	 */
+	public function index(){
+		$this->rencon->theme()->set_h1('ファイルとフォルダ');
+		$this->rencon->view()->set('name', 'value');
+
+		echo $this->rencon->theme()->bind(
+			$this->rencon->view()->bind()
+		);
+		exit;
+	}
+
+}
+?>
+<?php
+/**
+ * rencon views class
+ *
+ * @author Tomoya Koyanagi <tomk79@gmail.com>
+ */
+class rencon_view{
+	private $rencon;
+	private $values = array();
+
+	/**
+	 * Constructor
+	 */
+	public function __construct( $rencon ){
+		$this->rencon = $rencon;
+	}
+
+	/**
+	 * 値をセット
+	 */
+	public function set($key, $val){
+		$this->values[$key] = $val;
+		return true;
+	}
+
+	/**
+	 * 値を取得
+	 */
+	public function get($key){
+		return $this->values[$key];
+	}
+
+	/**
+	 * ビューに値をバインド
+	 */
+	public function bind( $action = null ){
+		if(!strlen( $action )){
+			$action = $this->rencon->action();
+		}
+		$action_ary = explode('.', $action);
+		$app = null;
+		$act = null;
+
+		if( array_key_exists(0, $action_ary) ){
+			$app = $action_ary[0];
+		}
+		if( array_key_exists(1, $action_ary) ){
+			$act = $action_ary[1];
+		}
+		if( !strlen($act) ){
+			$act = 'index';
+		}
+
+if( $app == 'db' && $act == 'index' ){
+ob_start(); ?><p>db app のビューです。</p>
+<?php return ob_get_clean();
+}
+if( $app == 'files' && $act == 'index' ){
+ob_start(); ?><p>files app のビューです。</p>
+<p><?= htmlspecialchars( $this->get('name') ) ?></p>
+<?php return ob_get_clean();
+}
+
+
+		return false;
+	}
 
 }
 ?>
