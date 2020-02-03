@@ -1,17 +1,4 @@
 <?php
-/* ---------------------
-  rencon v0.0.1-alpha.1+dev
-  (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-03T04:02:16+00:00 --
---------------------- */
-
-$conf = new stdClass();
-
-$rencon = new rencon($conf);
-$rencon->execute();
-exit;
-
-?><?php
 /**
  * rencon core class
  *

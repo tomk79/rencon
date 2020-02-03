@@ -40,7 +40,7 @@ class builder{
 		$this->cleanup();
 
 		$this->initialize_rencon();
-		$this->append_src_file( 'main.php' );
+		$this->append_src_file( 'rencon.php' );
 
 		echo ''."\n";
 		echo ''."\n";
@@ -74,6 +74,13 @@ class builder{
 			$this->append('  -- developers preview build @'.date('c').' --'."\n");
 		}
 		$this->append('--------------------- *'.'/'."\n");
+		$this->append(''."\n");
+		$this->append('$conf = new stdClass();'."\n");
+		$this->append(''."\n");
+		$this->append('$rencon = new rencon($conf);'."\n");
+		$this->append('$rencon->execute();'."\n");
+		$this->append('exit;'."\n");
+		$this->append(''."\n");
 		$this->append('?'.'>');
 	}
 
