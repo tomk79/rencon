@@ -27,6 +27,9 @@ class rencon_view{
 	 * 値を取得
 	 */
 	public function get($key){
+		if( !array_key_exists($key, $this->values) ){
+			return false;
+		}
 		return $this->values[$key];
 	}
 

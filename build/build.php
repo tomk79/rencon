@@ -7,6 +7,7 @@ exit;
 class builder{
 	private $realpath_proj_src;
 	private $realpath_dist;
+	private $req;
 	private $composerJson;
 
 	/**
@@ -23,6 +24,7 @@ class builder{
 			exit(41);
 		}
 		$this->realpath_dist = realpath(__DIR__.'/../dist/').'/';
+		$this->req = new \tomk79\request();
 
 		$this->composerJson = json_decode(file_get_contents( __DIR__.'/../composer.json' ));
 	}
@@ -82,20 +84,15 @@ class builder{
 		$this->append_src(''."\n");
 		$this->append_src('$conf = new stdClass();'."\n");
 		$this->append_src(''."\n");
-		$this->append_src('/*'."\n");
-		$this->append_src('ログインユーザーのIDとパスワードの対を設定します。'."\n");
-		$this->append_src('*/'."\n");
-		$this->append_src('$conf->users = array('."\n");
-		$this->append_src('	"admin" => sha1("admin"),'."\n");
-		$this->append_src(');'."\n");
-		$this->append_src(''."\n");
-		$this->append_src('/*'."\n");
-		$this->append_src('データベースの接続情報を設定します。'."\n");
-		$this->append_src('*/'."\n");
-		$this->append_src('$conf->databases = array('."\n");
-		$this->append_src('	"main" => array('."\n");
-		$this->append_src('	),'."\n");
-		$this->append_src(');'."\n");
+
+		$configFile = $this->req->get_cli_option('--config');
+		if( strlen($configFile) && is_file($configFile) && is_readable($configFile) ){
+			$src_config = file_get_contents($configFile);
+			$this->append_src($src_config);
+		}else{
+			$src_config = file_get_contents(__DIR__.'/config.txt');
+			$this->append_src($src_config);
+		}
 		$this->append_src(''."\n");
 		$this->append_src(''."\n");
 		$this->append_src(''."\n");

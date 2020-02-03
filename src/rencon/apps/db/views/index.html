@@ -1,1 +1,12 @@
 <p>db app のビューです。</p>
+<?php
+
+if( !class_exists('PDO') ){
+    echo '<p>PDOが利用できません。</p>';
+}else{
+    $drivers = $this->get('dbh')->get_available_drivers();
+    echo '<p>'.implode(', ', $drivers).'</p>';
+}
+
+
+?>

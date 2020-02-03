@@ -1,0 +1,42 @@
+/*
+ログインユーザーのIDとパスワードの対を設定します。
+*/
+$conf->users = array(
+	"admin" => sha1("admin"),
+);
+
+/*
+データベースの接続情報を設定します。
+*/
+$conf->databases = array(
+	"main" => array(
+		"driver" => "sqlite",
+		"database" => "database.db",
+	),
+	"memory" => array(
+		"driver" => "sqlite",
+		"database" => ":memory:",
+	),
+	"dsn_sample" => array(
+		"dsn" => "sqlite::memory:",
+		"username" => null,
+		"password" => null,
+		"options" => array(),
+	),
+	"db2" => array(
+		"driver" => "mysql",
+		"host" => "127.0.0.1",
+		"port" => 3306,
+		"database" => "dbname",
+		"username" => "user",
+		"password" => "passwd",
+	),
+	"db3" => array(
+		"driver" => "pgsql",
+		"host" => "127.0.0.1",
+		"port" => 5432,
+		"database" => "dbname",
+		"username" => "user",
+		"password" => "passwd",
+	),
+);

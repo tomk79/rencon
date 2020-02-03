@@ -37,5 +37,22 @@ class rencon_dbh{
 			)
 		);
 	}
+
+	/**
+	 * PDO に直接アクセスする
+	 */
+	public function pdo(){
+		return $this->pdo;
+	}
+
+	/**
+	 * PDO::getAvailableDrivers()
+	 */
+	public function get_available_drivers(){
+		if( !$this->is_pdo_enabled() ){
+			return false;
+		}
+		return \PDO::getAvailableDrivers();
+	}
 }
 ?>

@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-03T16:48:47+00:00 --
+  -- developers preview build @2020-02-03T18:04:22+00:00 --
 --------------------- */
 
 $conf = new stdClass();
@@ -19,6 +19,34 @@ $conf->users = array(
 */
 $conf->databases = array(
 	"main" => array(
+		"driver" => "sqlite",
+		"database" => "database.db",
+	),
+	"memory" => array(
+		"driver" => "sqlite",
+		"database" => ":memory:",
+	),
+	"dsn_sample" => array(
+		"dsn" => "sqlite::memory:",
+		"username" => null,
+		"password" => null,
+		"options" => array(),
+	),
+	"db2" => array(
+		"driver" => "mysql",
+		"host" => "127.0.0.1",
+		"port" => 3306,
+		"database" => "dbname",
+		"username" => "user",
+		"password" => "passwd",
+	),
+	"db3" => array(
+		"driver" => "pgsql",
+		"host" => "127.0.0.1",
+		"port" => 5432,
+		"database" => "dbname",
+		"username" => "user",
+		"password" => "passwd",
 	),
 );
 
@@ -1106,6 +1134,23 @@ class rencon_dbh{
 			)
 		);
 	}
+
+	/**
+	 * PDO に直接アクセスする
+	 */
+	public function pdo(){
+		return $this->pdo;
+	}
+
+	/**
+	 * PDO::getAvailableDrivers()
+	 */
+	public function get_available_drivers(){
+		if( !$this->is_pdo_enabled() ){
+			return false;
+		}
+		return \PDO::getAvailableDrivers();
+	}
 }
 ?>
 <?php
@@ -1129,6 +1174,10 @@ class rencon_apps_db_ctrl{
 	 */
 	public function index(){
 		$this->rencon->theme()->set_h1('データベース管理');
+
+		$dbh = new rencon_dbh($this->rencon);
+		$this->rencon->view()->set('dbh', $dbh);
+
 		echo $this->rencon->theme()->bind(
 			$this->rencon->view()->bind()
 		);
@@ -1197,6 +1246,9 @@ class rencon_view{
 	 * 値を取得
 	 */
 	public function get($key){
+		if( !array_key_exists($key, $this->values) ){
+			return false;
+		}
 		return $this->values[$key];
 	}
 
@@ -1223,6 +1275,17 @@ class rencon_view{
 
 if( $app == 'db' && $act == 'index' ){
 ob_start(); ?><p>db app のビューです。</p>
+<?php
+
+if( !class_exists('PDO') ){
+    echo '<p>PDOが利用できません。</p>';
+}else{
+    $drivers = $this->get('dbh')->get_available_drivers();
+    echo '<p>'.implode(', ', $drivers).'</p>';
+}
+
+
+?>
 <?php return ob_get_clean();
 }
 if( $app == 'files' && $act == 'index' ){
