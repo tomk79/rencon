@@ -41,14 +41,40 @@ class rencon{
 		if( $action == 'logout' ){
 			$login->logout();
 			exit;
+
+		}elseif( !strlen($action) ){
+			header('Content-type: text/html');
+			$this->theme->set_h1('ホーム');
+			echo $this->theme->bind('<p>ホーム画面</p>');
+			exit;
 		}
 
-		header('Content-type: text/html');
-		$this->theme->set_h1('ホーム');
-		echo $this->theme->bind('<p>ホーム画面</p>');
+		$this->notfound();
 		exit;
 	}
 
+
+	/**
+	 * Not Found 画面を出力
+	 */
+	public function notfound(){
+		header('HTTP/1.1 404 Not Found');
+		header('Content-type: text/html');
+		$this->theme->set_h1('Not Found');
+		echo $this->theme->bind('<p>お探しの画面はありません。<a href="?">戻る</a></p>');
+		exit;
+	}
+
+	/**
+	 * Forbidden 画面を出力
+	 */
+	public function forbidden(){
+		header('HTTP/1.1 403 Forbidden');
+		header('Content-type: text/html');
+		$this->theme->set_h1('Forbidden');
+		echo $this->theme->bind('<p>ログインしてください。<a href="?a='.urlencode($this->action()).'">戻る</a></p>');
+		exit;
+	}
 
 	/**
 	 * 現在のアクションを返す

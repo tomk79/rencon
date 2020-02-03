@@ -29,7 +29,8 @@ class rencon_login{
 
 		$login_id = $this->rencon->req()->get_param('login_id');
 		$login_pw = $this->rencon->req()->get_param('login_pw');
-		if( strlen($login_id) && strlen($login_pw) ){
+		$login_try = $this->rencon->req()->get_param('login_try');
+		if( strlen( $login_try ) && strlen($login_id) && strlen($login_pw) ){
 			// ログイン評価
 			if( array_key_exists($login_id, $users) && $users[$login_id] == sha1($login_pw) ){
 				$this->rencon->req()->set_session('login_id', $login_id);
@@ -46,6 +47,10 @@ class rencon_login{
 			if( array_key_exists($login_id, $users) && $users[$login_id] == $login_pw_hash ){
 				return true;
 			}
+			$this->rencon->req()->delete_session('login_id');
+			$this->rencon->req()->delete_session('login_pw');
+			$this->rencon->forbidden();
+			exit;
 		}
 
 		return false;
@@ -71,10 +76,17 @@ class rencon_login{
 	<body>
 		<div class="container">
 			<h1>rencon</h1>
+			<?php if( strlen($this->rencon->req()->get_param('login_try')) ){ ?>
+				<div class="alert alert-danger" role="alert">
+					<div>IDまたはパスワードが違います。</div>
+				</div>
+			<?php } ?>
+
 			<form action="?" method="post">
 ID: <input type="text" name="login_id" value="" class="form-element" />
 PW: <input type="password" name="login_pw" value="" class="form-element" />
 <input type="submit" value="Login" class="btn btn-primary" />
+<input type="hidden" name="login_try" value="1" />
 <input type="hidden" name="a" value="<?= htmlspecialchars($this->rencon->action()) ?>" />
 			</form>
 		</div>

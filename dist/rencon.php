@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-03T15:01:34+00:00 --
+  -- developers preview build @2020-02-03T15:16:52+00:00 --
 --------------------- */
 
 $conf = new stdClass();
@@ -58,14 +58,40 @@ class rencon{
 		if( $action == 'logout' ){
 			$login->logout();
 			exit;
+
+		}elseif( !strlen($action) ){
+			header('Content-type: text/html');
+			$this->theme->set_h1('ホーム');
+			echo $this->theme->bind('<p>ホーム画面</p>');
+			exit;
 		}
 
-		header('Content-type: text/html');
-		$this->theme->set_h1('ホーム');
-		echo $this->theme->bind('<p>ホーム画面</p>');
+		$this->notfound();
 		exit;
 	}
 
+
+	/**
+	 * Not Found 画面を出力
+	 */
+	public function notfound(){
+		header('HTTP/1.1 404 Not Found');
+		header('Content-type: text/html');
+		$this->theme->set_h1('Not Found');
+		echo $this->theme->bind('<p>お探しの画面はありません。<a href="?">戻る</a></p>');
+		exit;
+	}
+
+	/**
+	 * Forbidden 画面を出力
+	 */
+	public function forbidden(){
+		header('HTTP/1.1 403 Forbidden');
+		header('Content-type: text/html');
+		$this->theme->set_h1('Forbidden');
+		echo $this->theme->bind('<p>ログインしてください。<a href="?a='.urlencode($this->action()).'">戻る</a></p>');
+		exit;
+	}
 
 	/**
 	 * 現在のアクションを返す
@@ -194,7 +220,8 @@ class rencon_login{
 
 		$login_id = $this->rencon->req()->get_param('login_id');
 		$login_pw = $this->rencon->req()->get_param('login_pw');
-		if( strlen($login_id) && strlen($login_pw) ){
+		$login_try = $this->rencon->req()->get_param('login_try');
+		if( strlen( $login_try ) && strlen($login_id) && strlen($login_pw) ){
 			// ログイン評価
 			if( array_key_exists($login_id, $users) && $users[$login_id] == sha1($login_pw) ){
 				$this->rencon->req()->set_session('login_id', $login_id);
@@ -211,6 +238,10 @@ class rencon_login{
 			if( array_key_exists($login_id, $users) && $users[$login_id] == $login_pw_hash ){
 				return true;
 			}
+			$this->rencon->req()->delete_session('login_id');
+			$this->rencon->req()->delete_session('login_pw');
+			$this->rencon->forbidden();
+			exit;
 		}
 
 		return false;
@@ -236,10 +267,17 @@ class rencon_login{
 	<body>
 		<div class="container">
 			<h1>rencon</h1>
+			<?php if( strlen($this->rencon->req()->get_param('login_try')) ){ ?>
+				<div class="alert alert-danger" role="alert">
+					<div>IDまたはパスワードが違います。</div>
+				</div>
+			<?php } ?>
+
 			<form action="?" method="post">
 ID: <input type="text" name="login_id" value="" class="form-element" />
 PW: <input type="password" name="login_pw" value="" class="form-element" />
 <input type="submit" value="Login" class="btn btn-primary" />
+<input type="hidden" name="login_try" value="1" />
 <input type="hidden" name="a" value="<?= htmlspecialchars($this->rencon->action()) ?>" />
 			</form>
 		</div>
