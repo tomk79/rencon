@@ -42,6 +42,7 @@ class builder{
 		$this->initialize_rencon();
 		$this->append_src_file( 'rencon.php' );
 		$this->append_src_file( 'rencon/theme.php' );
+		$this->append_src_file( 'rencon/login.php' );
 		$this->append_src_file( 'rencon/request.php' );
 		$this->append_resourceMgr();
 
@@ -77,6 +78,10 @@ class builder{
 		$this->append_src('--------------------- *'.'/'."\n");
 		$this->append_src(''."\n");
 		$this->append_src('$conf = new stdClass();'."\n");
+		$this->append_src(''."\n");
+		$this->append_src('$conf->users = array('."\n");
+		$this->append_src('	"admin" => sha1("admin"),'."\n");
+		$this->append_src(');'."\n");
 		$this->append_src(''."\n");
 		$this->append_src('$rencon = new rencon($conf);'."\n");
 		$this->append_src('$rencon->execute();'."\n");

@@ -37,15 +37,22 @@ class rencon_theme{
 		<meta name="robots" content="nofollow, noindex, noarchive" />
 		<link rel="stylesheet" href="?res=bootstrap4/css/bootstrap.min.css" />
 		<script src="?res=bootstrap4/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="?res=styles/common.css" />
 	</head>
 	<body>
-		<p>rencon</p>
-
-<h1><?= htmlspecialchars( nl2br( $this->h1 ) ); ?></h1>
+		<div class="container">
+			<p><a href="<?= htmlspecialchars($this->rencon->href()); ?>">rencon</a></p>
+		</div>
+		<div class="container">
+			<h1><?= htmlspecialchars( nl2br( $this->h1 ) ); ?></h1>
 <div class="contents">
 <?= $content ?>
 </div>
 
+		</div>
+		<div class="container">
+			<p><a href="?a=logout">Logout</a></p>
+		</div>
 	</body>
 </html>
 <?php
