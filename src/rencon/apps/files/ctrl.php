@@ -19,13 +19,31 @@ class rencon_apps_files_ctrl{
 	 */
 	public function index(){
 		$this->rencon->theme()->set_h1('ファイルとフォルダ');
-		$this->rencon->view()->set('name', 'value');
-
-		$remoteFinder = new rencon_vendor_tomk79_remoteFinder_main('/', array());
 
 		echo $this->rencon->theme()->bind(
 			$this->rencon->view()->bind()
 		);
+		exit;
+	}
+
+	/**
+	 * remoteFinder GPI
+	 */
+	public function rfgpi(){
+		$remoteFinder = new rencon_vendor_tomk79_remoteFinder_main(array(
+			'default' => '/'
+		), array(
+			'paths_invisible' => array(
+				'/invisibles/*',
+				'*.hide'
+			),
+			'paths_readonly' => array(
+				'/readonly/*',
+			),
+		));
+		$value = $remoteFinder->gpi( json_decode( $_REQUEST['data'] ) );
+		header('Content-type: text/json');
+		echo json_encode($value);
 		exit;
 	}
 

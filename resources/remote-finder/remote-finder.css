@@ -173,7 +173,7 @@
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-image: url("images/new_folder.svg");
+    background-image: url("?res=remote-finder/images/new_folder.svg");
     background-size: contain;
     vertical-align: middle;
     margin-right: 0.5em; }
@@ -182,7 +182,7 @@
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-image: url("images/new_file.svg");
+    background-image: url("?res=remote-finder/images/new_file.svg");
     background-size: contain;
     vertical-align: middle;
     margin-right: 0.5em; }
@@ -191,7 +191,7 @@
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-image: url("images/folder.svg");
+    background-image: url("?res=remote-finder/images/folder.svg");
     background-size: contain;
     vertical-align: middle;
     margin-right: 0.5em; }
@@ -200,7 +200,7 @@
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-image: url("images/file.svg");
+    background-image: url("?res=remote-finder/images/file.svg");
     background-size: contain;
     vertical-align: middle;
     margin-right: 0.5em; }
@@ -209,7 +209,7 @@
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-image: url("images/copy.svg");
+    background-image: url("?res=remote-finder/images/copy.svg");
     background-size: contain;
     vertical-align: middle;
     margin-right: 0.5em; }
@@ -218,7 +218,7 @@
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-image: url("images/rename.svg");
+    background-image: url("?res=remote-finder/images/rename.svg");
     background-size: contain;
     vertical-align: middle;
     margin-right: 0.5em; }
@@ -227,7 +227,7 @@
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-image: url("images/delete.svg");
+    background-image: url("?res=remote-finder/images/delete.svg");
     background-size: contain;
     vertical-align: middle;
     margin-right: 0.5em; }
@@ -236,7 +236,7 @@
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-image: url("images/readonly.svg");
+    background-image: url("?res=remote-finder/images/readonly.svg");
     background-size: contain;
     vertical-align: middle;
     margin-right: 0.5em;

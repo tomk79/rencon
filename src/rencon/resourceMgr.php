@@ -26,6 +26,7 @@ class rencon_resourceMgr{
 				case 'jpg': case 'jpe': case 'jpeg': header('Content-type: image/jpeg'); break;
 				case 'gif': header('Content-type: image/gif'); break;
 				case 'png': header('Content-type: image/png'); break;
+				case 'svg': header('Content-type: image/svg+xml'); break;
 			}
 		}
 		echo $this->get($path);
