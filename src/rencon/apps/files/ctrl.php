@@ -21,6 +21,8 @@ class rencon_apps_files_ctrl{
 		$this->rencon->theme()->set_h1('ファイルとフォルダ');
 		$this->rencon->view()->set('name', 'value');
 
+		$remoteFinder = new rencon_vendor_tomk79_remoteFinder_main('/', array());
+
 		echo $this->rencon->theme()->bind(
 			$this->rencon->view()->bind()
 		);

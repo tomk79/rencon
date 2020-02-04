@@ -46,8 +46,10 @@ class builder{
 		$this->append_src_file( 'rencon/router.php' );
 		$this->append_src_file( 'rencon/theme.php' );
 		$this->append_src_file( 'rencon/login.php' );
+		$this->append_src_file( 'rencon/filesystem.php' );
 		$this->append_src_file( 'rencon/request.php' );
 		$this->append_src_file( 'rencon/dbh.php' );
+		$this->append_src_file( 'rencon/vendor/tomk79/remoteFinder/main.php' );
 		$this->append_apps();
 		$this->append_resourceMgr();
 

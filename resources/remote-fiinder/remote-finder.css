@@ -1,0 +1,244 @@
+.remote-finder {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+  background-color: #f9f9f9;
+  overflow: hidden; }
+  .remote-finder a {
+    background-color: #fff;
+    color: #333;
+    text-decoration: none; }
+    .remote-finder a:hover {
+      background-color: #eee;
+      color: #000; }
+  .remote-finder button {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #666;
+    cursor: pointer; }
+    .remote-finder button:hover {
+      background-color: #eee;
+      color: #000; }
+  .remote-finder__menu {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: -ms-flexbox;
+    display: flex;
+    border-bottom: 1px solid #666;
+    max-width: 100%;
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap; }
+    .remote-finder__menu > li {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      border-right: 1px solid #999;
+      max-width: 100%; }
+      .remote-finder__menu > li:last-child {
+        border-right: none; }
+      .remote-finder__menu > li > a {
+        display: block;
+        position: relative;
+        padding: 0.3em 0.5em;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap; }
+      .remote-finder__menu > li > input[type=text] {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        border: 0;
+        margin: 0;
+        line-height: 1;
+        border-radius: 0;
+        outline: none; }
+  .remote-finder__path-bar {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: -ms-flexbox;
+    display: flex;
+    overflow: auto;
+    position: relative;
+    border-bottom: 1px solid #666;
+    max-width: 100%;
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap; }
+    .remote-finder__path-bar > li {
+      display: block;
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      border-right: none;
+      max-width: 100%;
+      position: relative; }
+      .remote-finder__path-bar > li:last-child {
+        border-right: none; }
+      .remote-finder__path-bar > li > a {
+        display: block;
+        position: relative;
+        padding: 0.3em 0.5em 0.3em 1em;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap; }
+        .remote-finder__path-bar > li > a::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          right: -5px;
+          top: 0;
+          width: 15px;
+          height: 50%;
+          border-right: 1px solid #999;
+          background-color: #fff;
+          transform: skew(30deg); }
+        .remote-finder__path-bar > li > a::after {
+          content: " ";
+          display: block;
+          position: absolute;
+          right: -5px;
+          bottom: 0;
+          width: 15px;
+          height: 50%;
+          border-right: 1px solid #999;
+          background-color: #fff;
+          transform: skew(-30deg); }
+        .remote-finder__path-bar > li > a:hover::before, .remote-finder__path-bar > li > a:hover::after {
+          background-color: #eee;
+          color: #000; }
+      .remote-finder__path-bar > li:first-child > a {
+        padding-left: 0.3em; }
+  .remote-finder__file-list {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: auto; }
+    .remote-finder__file-list > li {
+      display: block;
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      border-bottom: 1px solid #999; }
+      .remote-finder__file-list > li:last-child {
+        border-bottom: none; }
+      .remote-finder__file-list > li > a {
+        display: block;
+        position: relative;
+        padding: 0.3em 0.5em;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap; }
+  .remote-finder__file-list-submenu {
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+    overflow: auto; }
+    .remote-finder__file-list-submenu > li {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      border: none; }
+      .remote-finder__file-list-submenu > li:last-child {
+        border-bottom: none; }
+      .remote-finder__file-list-submenu > li > a {
+        display: block;
+        padding: 0.3em 0.5em;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap; }
+  .remote-finder__file-list a:hover .remote-finder__file-list-submenu {
+    display: block; }
+  .remote-finder__ico-new-folder::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-image: url("images/new_folder.svg");
+    background-size: contain;
+    vertical-align: middle;
+    margin-right: 0.5em; }
+  .remote-finder__ico-new-file::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-image: url("images/new_file.svg");
+    background-size: contain;
+    vertical-align: middle;
+    margin-right: 0.5em; }
+  .remote-finder__ico-folder::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-image: url("images/folder.svg");
+    background-size: contain;
+    vertical-align: middle;
+    margin-right: 0.5em; }
+  .remote-finder__ico-file::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-image: url("images/file.svg");
+    background-size: contain;
+    vertical-align: middle;
+    margin-right: 0.5em; }
+  .remote-finder__ico-copy::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-image: url("images/copy.svg");
+    background-size: contain;
+    vertical-align: middle;
+    margin-right: 0.5em; }
+  .remote-finder__ico-rename::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-image: url("images/rename.svg");
+    background-size: contain;
+    vertical-align: middle;
+    margin-right: 0.5em; }
+  .remote-finder__ico-delete::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-image: url("images/delete.svg");
+    background-size: contain;
+    vertical-align: middle;
+    margin-right: 0.5em; }
+  .remote-finder__ico-readonly::after {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-image: url("images/readonly.svg");
+    background-size: contain;
+    vertical-align: middle;
+    margin-right: 0.5em;
+    margin-right: 0;
+    margin-left: 0.5em; }
