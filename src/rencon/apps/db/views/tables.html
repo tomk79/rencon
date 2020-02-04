@@ -1,0 +1,52 @@
+<p>テーブル一覧です。</p>
+<form action="" method="post">
+<textarea name="db_sql" class="form-control"><?= htmlspecialchars( $this->rencon->req()->get_param('db_sql') ); ?></textarea>
+<input type="submit" value="クエリを実行" class="btn btn-primary" />
+</form>
+<hr />
+
+
+<?php
+$results = $this->rencon->view()->get('result');
+$affectedRows = $this->rencon->view()->get('affectedRows');
+?>
+<p><?= intval($affectedRows) ?> 件に影響</p>
+
+
+<?php
+if( !is_array($results) || !count($results) ){
+
+}else{
+	echo '<div class="table-responsive">'."\n";
+	echo '<table class="table table-sm">'."\n";
+	echo '<thead>'."\n";
+	foreach($results as $result){
+		echo '<tr>'."\n";
+		foreach($result as $key=>$val){
+			echo '<th>'.htmlspecialchars($key).'</th>'."\n";
+		}
+		echo '</tr>'."\n";
+		break;
+	}
+	echo '</thead>'."\n";
+	echo '<tbody>'."\n";
+	foreach($results as $result){
+		echo '<tr>'."\n";
+		foreach($result as $key=>$val){
+			echo '<td>'.htmlspecialchars($val).'</td>'."\n";
+		}
+		echo '</tr>'."\n";
+	}
+	echo '</tbody>'."\n";
+	echo '</table>'."\n";
+	echo '</div>'."\n";
+	// var_dump( $results );
+}
+?>
+
+
+<hr />
+<p>a = <?= htmlspecialchars( $this->rencon->req()->get_param('a') ); ?></p>
+<p>dbkey = <?= htmlspecialchars( $this->rencon->req()->get_param('dbkey') ); ?></p>
+<hr />
+<p><a href="?a=db">戻る</a></p>

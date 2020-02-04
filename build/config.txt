@@ -9,11 +9,11 @@ $conf->users = array(
 データベースの接続情報を設定します。
 */
 $conf->databases = array(
-	"main" => array(
+	"main_sample" => array(
 		"driver" => "sqlite",
 		"database" => "database.db",
 	),
-	"memory" => array(
+	"sqlite_memory_sample" => array(
 		"driver" => "sqlite",
 		"database" => ":memory:",
 	),
@@ -23,7 +23,7 @@ $conf->databases = array(
 		"password" => null,
 		"options" => array(),
 	),
-	"db2" => array(
+	"db2_mysql_sample" => array(
 		"driver" => "mysql",
 		"host" => "127.0.0.1",
 		"port" => 3306,
@@ -31,7 +31,7 @@ $conf->databases = array(
 		"username" => "user",
 		"password" => "passwd",
 	),
-	"db3" => array(
+	"db3_pgsql_sample" => array(
 		"driver" => "pgsql",
 		"host" => "127.0.0.1",
 		"port" => 5432,

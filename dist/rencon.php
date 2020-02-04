@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-04T02:14:33+00:00 --
+  -- developers preview build @2020-02-04T08:10:09+00:00 --
 --------------------- */
 
 $conf = new stdClass();
@@ -18,11 +18,11 @@ $conf->users = array(
 データベースの接続情報を設定します。
 */
 $conf->databases = array(
-	"main" => array(
+	"main_sample" => array(
 		"driver" => "sqlite",
 		"database" => "database.db",
 	),
-	"memory" => array(
+	"sqlite_memory_sample" => array(
 		"driver" => "sqlite",
 		"database" => ":memory:",
 	),
@@ -32,7 +32,7 @@ $conf->databases = array(
 		"password" => null,
 		"options" => array(),
 	),
-	"db2" => array(
+	"db2_mysql_sample" => array(
 		"driver" => "mysql",
 		"host" => "127.0.0.1",
 		"port" => 3306,
@@ -40,7 +40,7 @@ $conf->databases = array(
 		"username" => "user",
 		"password" => "passwd",
 	),
-	"db3" => array(
+	"db3_pgsql_sample" => array(
 		"driver" => "pgsql",
 		"host" => "127.0.0.1",
 		"port" => 5432,
@@ -2385,16 +2385,84 @@ class rencon_dbh{
 	}
 
 	/**
+	 * dbkey から dbinfo を取得する
+	 */
+	public function get_dbinfo_by_key( $dbkey ){
+		$conf = $this->rencon->conf();
+		$dbinfo = false;
+		if( strlen($dbkey) && array_key_exists($dbkey, $conf->databases) ){
+			$dbinfo = $conf->databases[$dbkey];
+		}
+		return $dbinfo;
+	}
+
+	/**
+	 * DSNを生成する
+	 */
+	public function get_dsn_info_by_dbinfo( $dbinfo ){
+		$dbinfo = (array) $dbinfo;
+		$rtn = array(
+			'dsn' => '',
+			'username' => '',
+			'password' => '',
+			'options' => array(),
+		);
+		if( array_key_exists( 'username', $dbinfo ) ){
+			$rtn['username'] = $dbinfo['username'];
+		}
+		if( array_key_exists( 'password', $dbinfo ) ){
+			$rtn['password'] = $dbinfo['password'];
+		}
+		if( array_key_exists( 'options', $dbinfo ) ){
+			$rtn['options'] = $dbinfo['options'];
+		}
+
+		if( array_key_exists( 'dsn', $dbinfo ) ){
+			$rtn['dsn'] = $dbinfo['dsn'];
+		}elseif( array_key_exists( 'driver', $dbinfo ) ){
+			$rtn['dsn'] = strtolower($dbinfo['driver']).':';
+			switch(strtolower($dbinfo['driver'])){
+				case 'sqlite':
+					$rtn['dsn'] .= $dbinfo['database'];
+					break;
+				case 'mysql':
+				case 'pgsql':
+					$array_dsns = array();
+					if( array_key_exists( 'host', $dbinfo ) && strlen($dbinfo['host']) ){
+						$array_dsns[] = 'host='.$dbinfo['host'];
+					}
+					if( array_key_exists( 'port', $dbinfo ) && strlen($dbinfo['port']) ){
+						$array_dsns[] = 'port='.$dbinfo['port'];
+					}
+					if( array_key_exists( 'database', $dbinfo ) && strlen($dbinfo['database']) ){
+						$array_dsns[] = 'dbname='.$dbinfo['database'];
+					}
+					if( array_key_exists( 'username', $dbinfo ) && strlen($dbinfo['username']) ){
+						$array_dsns[] = 'user='.$dbinfo['username'];
+					}
+					if( array_key_exists( 'password', $dbinfo ) && strlen($dbinfo['password']) ){
+						$array_dsns[] = 'password='.$dbinfo['password'];
+					}
+					$rtn['dsn'] .= implode(';', $array_dsns);
+					break;
+			}
+		}
+		return $rtn;
+	}
+
+	/**
 	 * データベースに接続する
 	 */
-	public function connect( $database_setting ){
+	public function connect( $dbkey ){
+		$dbinfo = $this->get_dbinfo_by_key($dbkey);
+		$dsn = $this->get_dsn_info_by_dbinfo($dbinfo);
 		$this->pdo = new \PDO(
-			'sqlite:'.'./database.sqlite',
-			null, null,
-			array(
-				\PDO::ATTR_PERSISTENT => false, // ←これをtrueにすると、"持続的な接続" になる
-			)
+			$dsn['dsn'],
+			$dsn['username'],
+			$dsn['password'],
+			$dsn['options']
 		);
+		return true;
 	}
 
 	/**
@@ -2758,22 +2826,55 @@ class rencon_vendor_tomk79_remoteFinder_main{
  */
 class rencon_apps_db_ctrl{
 	private $rencon;
+	private $dbh;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct( $rencon ){
 		$this->rencon = $rencon;
+		$this->dbh = new rencon_dbh($this->rencon);
+
+		$rencon->view()->set('dbh', $this->dbh);
+		$rencon->theme()->set_h1('データベース管理');
 	}
 
 	/**
 	 * デフォルトアクション
 	 */
 	public function index(){
-		$this->rencon->theme()->set_h1('データベース管理');
+		echo $this->rencon->theme()->bind(
+			$this->rencon->view()->bind()
+		);
+		exit;
+	}
 
-		$dbh = new rencon_dbh($this->rencon);
-		$this->rencon->view()->set('dbh', $dbh);
+	/**
+	 * テーブル一覧
+	 */
+	public function tables(){
+		$conf = $this->rencon->conf();
+		$dbkey = $this->rencon->req()->get_param('dbkey');
+		$dbinfo = $this->dbh->get_dbinfo_by_key( $dbkey );
+		$this->rencon->view()->set('dbkey', $dbkey);
+		$this->rencon->view()->set('dbinfo', $dbinfo);
+		if( $dbinfo ){
+			$this->dbh->connect($dbkey);
+		}
+
+		$sql = $this->rencon->req()->get_param('db_sql');
+		$sql = trim($sql);
+		$result = null;
+		$affectedRows = 0;
+		if( strlen($sql) ){
+			$sth = $this->dbh->pdo()->query($sql);
+			if($sth){
+				$result = $sth->fetchAll(PDO::FETCH_ASSOC);
+				$affectedRows = $sth->rowCount();
+			}
+		}
+		$this->rencon->view()->set('result', $result);
+		$this->rencon->view()->set('affectedRows', $affectedRows);
 
 		echo $this->rencon->theme()->bind(
 			$this->rencon->view()->bind()
@@ -2895,14 +2996,80 @@ ob_start(); ?><p>db app のビューです。</p>
 <?php
 
 if( !class_exists('PDO') ){
-    echo '<p>PDOが利用できません。</p>';
+	echo '<p>PDOが利用できません。</p>';
 }else{
-    $drivers = $this->get('dbh')->get_available_drivers();
-    echo '<p>'.implode(', ', $drivers).'</p>';
+	$conf = $this->rencon->conf();
+	// var_dump($conf);
+	echo '<ul>'."\n";
+	foreach($conf->databases as $dbkey=>$dbinfo){
+		echo '<li>';
+		echo '<a href="?a=db.tables&dbkey='.urlencode($dbkey).'">'.htmlspecialchars($dbkey).'</a>';
+		echo '</li>'."\n";
+
+	}
+	echo '</ul>'."\n";
+
+	$drivers = $this->get('dbh')->get_available_drivers();
+	echo '<p>'.implode(', ', $drivers).'</p>';
 }
 
 
 ?>
+<?php return ob_get_clean();
+}
+if( $app == 'db' && $act == 'tables' ){
+ob_start(); ?><p>テーブル一覧です。</p>
+<form action="" method="post">
+<textarea name="db_sql" class="form-control"><?= htmlspecialchars( $this->rencon->req()->get_param('db_sql') ); ?></textarea>
+<input type="submit" value="クエリを実行" class="btn btn-primary" />
+</form>
+<hr />
+
+
+<?php
+$results = $this->rencon->view()->get('result');
+$affectedRows = $this->rencon->view()->get('affectedRows');
+?>
+<p><?= intval($affectedRows) ?> 件に影響</p>
+
+
+<?php
+if( !is_array($results) || !count($results) ){
+
+}else{
+	echo '<div class="table-responsive">'."\n";
+	echo '<table class="table table-sm">'."\n";
+	echo '<thead>'."\n";
+	foreach($results as $result){
+		echo '<tr>'."\n";
+		foreach($result as $key=>$val){
+			echo '<th>'.htmlspecialchars($key).'</th>'."\n";
+		}
+		echo '</tr>'."\n";
+		break;
+	}
+	echo '</thead>'."\n";
+	echo '<tbody>'."\n";
+	foreach($results as $result){
+		echo '<tr>'."\n";
+		foreach($result as $key=>$val){
+			echo '<td>'.htmlspecialchars($val).'</td>'."\n";
+		}
+		echo '</tr>'."\n";
+	}
+	echo '</tbody>'."\n";
+	echo '</table>'."\n";
+	echo '</div>'."\n";
+	// var_dump( $results );
+}
+?>
+
+
+<hr />
+<p>a = <?= htmlspecialchars( $this->rencon->req()->get_param('a') ); ?></p>
+<p>dbkey = <?= htmlspecialchars( $this->rencon->req()->get_param('dbkey') ); ?></p>
+<hr />
+<p><a href="?a=db">戻る</a></p>
 <?php return ob_get_clean();
 }
 if( $app == 'files' && $act == 'index' ){
