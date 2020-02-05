@@ -103,6 +103,15 @@ $conf->users = array(
 $conf->users = null;
 ```
 
+### 無効にする機能
+
+```php
+$conf->disabled = array(
+	'db', // データベース操作を無効化
+	'files', // ファイルとフォルダ操作を無効化
+);
+```
+
 ### データベース接続情報設定
 
 データベースに接続するために必要な情報を設定します。
@@ -111,14 +120,14 @@ $conf->users = null;
 ```php
 $conf->databases = array(
   "main_db" => array(
-		"dsn" => "sqlite:./db/database.sqlite", // PDOの第1引数に渡される値
+    "dsn" => "sqlite:./db/database.sqlite", // PDOの第1引数に渡される値
     "driver" => "sqlite", // DBドライバ名 (`dsn` が設定される場合は不要)
     "host" => "127.0.0.1", // 接続先ホスト名 (`dsn` が設定される場合は不要)
     "port" => 3306, // 接続先ポート番号 (`dsn` が設定される場合は不要)
     "database" => "my_database_name", // 接続先データベース名 (`dsn` が設定される場合は不要)
     "username" => "user", // ログインユーザー名
     "password" => "passwd", // ログインパスワード
-		"options" => array(), // PDOオプション
+    "options" => array(), // PDOオプション
   ),
 );
 ```
@@ -156,14 +165,12 @@ $conf->databases = array(
 ### ビルド - Build
 
 ```
-$ cd {$projectRoot}
 $ php build/build.php
 ```
 
 ### テスト - Test
 
 ```
-$ cd {$projectRoot}
 $ php vendor/phpunit/phpunit/phpunit
 ```
 

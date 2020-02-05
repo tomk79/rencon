@@ -7,6 +7,7 @@
 class rencon_conf{
 	private $conf;
 	public $users;
+	public $disabled;
 	public $databases;
 
 	/**
@@ -20,6 +21,13 @@ class rencon_conf{
 		$this->users = null;
 		if( property_exists( $conf, 'users' ) && !is_null( $conf->users ) ){
 			$this->users = (array) $conf->users;
+		}
+
+		// --------------------------------------
+		// $conf->disabled
+		$this->disabled = array();
+		if( property_exists( $conf, 'disabled' ) && !is_null( $conf->disabled ) ){
+			$this->disabled = (array) $conf->disabled;
 		}
 
 		// --------------------------------------

@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-05T01:26:54+00:00 --
+  -- developers preview build @2020-02-05T02:55:12+00:00 --
 --------------------- */
 
 // =-=-=-=-=-=-=-=-=-=-=-= Configuration START =-=-=-=-=-=-=-=-=-=-=-=
@@ -28,6 +28,14 @@ $conf->users = array(
  */
 // $conf->users = null;
 
+
+/* --------------------------------------
+ * 無効にする機能
+ */
+$conf->disabled = array(
+	// 'db',
+	// 'files',
+);
 
 /* --------------------------------------
  * データベースの接続情報を設定します。
@@ -245,6 +253,7 @@ class rencon{
 class rencon_conf{
 	private $conf;
 	public $users;
+	public $disabled;
 	public $databases;
 
 	/**
@@ -258,6 +267,13 @@ class rencon_conf{
 		$this->users = null;
 		if( property_exists( $conf, 'users' ) && !is_null( $conf->users ) ){
 			$this->users = (array) $conf->users;
+		}
+
+		// --------------------------------------
+		// $conf->disabled
+		$this->disabled = array();
+		if( property_exists( $conf, 'disabled' ) && !is_null( $conf->disabled ) ){
+			$this->disabled = (array) $conf->disabled;
 		}
 
 		// --------------------------------------
@@ -308,6 +324,18 @@ class rencon_router{
 
 		if( !strlen($app) ){
 			return false;
+		}
+
+		$disabled = $this->rencon->conf()->disabled;
+		if( array_search($app, $disabled) !== false ){
+			$this->rencon->theme()->set_h1($app);
+			ob_start(); ?>
+<p>この機能 <code><?= htmlspecialchars($app) ?></code> は、利用が制限されています。</p>
+<p>設定を編集して、制限を解除することができます。</p>
+<?php
+			$code = ob_get_clean();
+			echo $this->rencon->theme()->bind( $code );
+			exit;
 		}
 
 		$className = 'rencon_apps_'.$app.'_ctrl';
