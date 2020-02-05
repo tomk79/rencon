@@ -51,7 +51,9 @@ class rencon_theme{
 
 		</div>
 		<div class="container">
+<?php if( $this->rencon->conf()->is_login_required() ){ ?>
 			<p><a href="?a=logout">Logout</a></p>
+<?php } ?>
 		</div>
 	</body>
 </html>

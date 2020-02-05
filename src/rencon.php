@@ -15,7 +15,7 @@ class rencon{
 	 * Constructor
 	 */
 	public function __construct( $conf ){
-		$this->conf = (object) $conf;
+		$this->conf = new rencon_conf( $conf );
 		$this->theme = new rencon_theme($this);
 		$this->resourceMgr = new rencon_resourceMgr($this);
 		$this->request = new rencon_request();

@@ -43,6 +43,7 @@ class builder{
 
 		$this->initialize_rencon();
 		$this->append_src_file( 'rencon.php' );
+		$this->append_src_file( 'rencon/conf.php' );
 		$this->append_src_file( 'rencon/router.php' );
 		$this->append_src_file( 'rencon/theme.php' );
 		$this->append_src_file( 'rencon/login.php' );
@@ -84,19 +85,23 @@ class builder{
 		}
 		$this->append_src('--------------------- *'.'/'."\n");
 		$this->append_src(''."\n");
+		$this->append_src('// =-=-=-=-=-=-=-=-=-=-=-= Configuration START =-=-=-=-=-=-=-=-=-=-=-='."\n");
 		$this->append_src('$conf = new stdClass();'."\n");
 		$this->append_src(''."\n");
 
 		$configFile = $this->req->get_cli_option('--config');
+		$src_config = '';
 		if( strlen($configFile) && is_file($configFile) && is_readable($configFile) ){
 			$src_config = file_get_contents($configFile);
-			$this->append_src($src_config);
 		}else{
-			$src_config = file_get_contents(__DIR__.'/config.txt');
-			$this->append_src($src_config);
+			$src_config = file_get_contents(__DIR__.'/_config.php');
 		}
+		$src_config = preg_replace('/^(?:\s*\<\?php)?(.*)(?:\?\>\s*)?$/si', '$1', $src_config);
+		$this->append_src($src_config);
+
 		$this->append_src(''."\n");
 		$this->append_src(''."\n");
+		$this->append_src('// =-=-=-=-=-=-=-=-=-=-=-= / Configuration END =-=-=-=-=-=-=-=-=-=-=-='."\n");
 		$this->append_src(''."\n");
 		$this->append_src(''."\n");
 		$this->append_src(''."\n");

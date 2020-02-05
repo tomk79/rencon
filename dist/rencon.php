@@ -2,21 +2,36 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-04T08:10:09+00:00 --
+  -- developers preview build @2020-02-05T00:39:33+00:00 --
 --------------------- */
 
+// =-=-=-=-=-=-=-=-=-=-=-= Configuration START =-=-=-=-=-=-=-=-=-=-=-=
 $conf = new stdClass();
 
-/*
-ログインユーザーのIDとパスワードの対を設定します。
-*/
+
+
+/* --------------------------------------
+ * ログインユーザーのIDとパスワードの対を設定します。
+ * 
+ * rencon の初期画面は、ログイン画面から始まります。
+ * `$conf->users` に 登録されたユーザーが、ログインを許可されます。
+ * ユーザーIDを キー に、sha1ハッシュ化されたパスワード文字列を 値 に持つ連想配列で設定してください。
+ * ユーザーは、複数登録できます。
+ */
 $conf->users = array(
 	"admin" => sha1("admin"),
 );
 
 /*
-データベースの接続情報を設定します。
-*/
+ * ユーザーを登録しない場合は、ログインなしで使用できます。
+ * そうしたい場合は、`$conf->users` を `null` に設定してください。
+ */
+// $conf->users = null;
+
+
+/* --------------------------------------
+ * データベースの接続情報を設定します。
+ */
 $conf->databases = array(
 	"main_sample" => array(
 		"driver" => "sqlite",
@@ -51,6 +66,7 @@ $conf->databases = array(
 );
 
 
+// =-=-=-=-=-=-=-=-=-=-=-= / Configuration END =-=-=-=-=-=-=-=-=-=-=-=
 
 
 
@@ -75,7 +91,7 @@ class rencon{
 	 * Constructor
 	 */
 	public function __construct( $conf ){
-		$this->conf = (object) $conf;
+		$this->conf = new rencon_conf( $conf );
 		$this->theme = new rencon_theme($this);
 		$this->resourceMgr = new rencon_resourceMgr($this);
 		$this->request = new rencon_request();
@@ -207,6 +223,50 @@ class rencon{
 ?>
 <?php
 /**
+ * rencon conf class
+ *
+ * @author Tomoya Koyanagi <tomk79@gmail.com>
+ */
+class rencon_conf{
+	private $conf;
+	public $users;
+	public $databases;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct( $conf ){
+		$this->conf = (object) $conf;
+
+		// --------------------------------------
+		// $conf->users
+		$this->users = null;
+		if( property_exists( $conf, 'users' ) && !is_null( $conf->users ) ){
+			$this->users = (array) $conf->users;
+		}
+
+		// --------------------------------------
+		// $conf->databases
+		$this->databases = null;
+		if( property_exists( $conf, 'databases' ) && !is_null( $conf->databases ) ){
+			$this->databases = (array) $conf->databases;
+		}
+	}
+
+	/**
+	 * ログインが必要か？
+	 */
+	public function is_login_required(){
+		if( !is_array($this->users) ){
+			return false;
+		}
+		return true;
+	}
+
+}
+?>
+<?php
+/**
  * rencon router class
  *
  * @author Tomoya Koyanagi <tomk79@gmail.com>
@@ -301,7 +361,9 @@ class rencon_theme{
 
 		</div>
 		<div class="container">
+<?php if( $this->rencon->conf()->is_login_required() ){ ?>
 			<p><a href="?a=logout">Logout</a></p>
+<?php } ?>
 		</div>
 	</body>
 </html>
@@ -331,14 +393,13 @@ class rencon_login{
 	 * ログインしているか調べる
 	 */
 	public function check(){
-		$conf = $this->rencon->conf();
-		$users = null;
-		if( property_exists( $conf, 'users' ) ){
-			$users = (array) $conf->users;
-		}
-		if( !is_array( $users ) ){
+
+		if( !$this->rencon->conf()->is_login_required() ){
+			// ユーザーが設定されていなければ、ログインの評価を行わない。
 			return true;
 		}
+
+		$users = (array) $this->rencon->conf()->users;
 
 		$login_id = $this->rencon->req()->get_param('login_id');
 		$login_pw = $this->rencon->req()->get_param('login_pw');
@@ -346,22 +407,22 @@ class rencon_login{
 		if( strlen( $login_try ) && strlen($login_id) && strlen($login_pw) ){
 			// ログイン評価
 			if( array_key_exists($login_id, $users) && $users[$login_id] == sha1($login_pw) ){
-				$this->rencon->req()->set_session('login_id', $login_id);
-				$this->rencon->req()->set_session('login_pw', sha1($login_pw));
+				$this->rencon->req()->set_session('rencon_ses_login_id', $login_id);
+				$this->rencon->req()->set_session('rencon_ses_login_pw', sha1($login_pw));
 				return true;
 			}
 		}
 
 
-		$login_id = $this->rencon->req()->get_session('login_id');
-		$login_pw_hash = $this->rencon->req()->get_session('login_pw');
+		$login_id = $this->rencon->req()->get_session('rencon_ses_login_id');
+		$login_pw_hash = $this->rencon->req()->get_session('rencon_ses_login_pw');
 		if( strlen($login_id) && strlen($login_pw_hash) ){
 			// ログイン済みか評価
 			if( array_key_exists($login_id, $users) && $users[$login_id] == $login_pw_hash ){
 				return true;
 			}
-			$this->rencon->req()->delete_session('login_id');
-			$this->rencon->req()->delete_session('login_pw');
+			$this->rencon->req()->delete_session('rencon_ses_login_id');
+			$this->rencon->req()->delete_session('rencon_ses_login_pw');
 			$this->rencon->forbidden();
 			exit;
 		}
@@ -415,8 +476,8 @@ PW: <input type="password" name="login_pw" value="" class="form-element" />
 	 * ログアウトして終了する
 	 */
 	public function logout(){
-		$this->rencon->req()->delete_session('login_id');
-		$this->rencon->req()->delete_session('login_pw');
+		$this->rencon->req()->delete_session('rencon_ses_login_id');
+		$this->rencon->req()->delete_session('rencon_ses_login_pw');
 
 		header('Content-type: text/html');
 		ob_start();

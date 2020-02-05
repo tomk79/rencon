@@ -18,14 +18,13 @@ class rencon_login{
 	 * ログインしているか調べる
 	 */
 	public function check(){
-		$conf = $this->rencon->conf();
-		$users = null;
-		if( property_exists( $conf, 'users' ) ){
-			$users = (array) $conf->users;
-		}
-		if( !is_array( $users ) ){
+
+		if( !$this->rencon->conf()->is_login_required() ){
+			// ユーザーが設定されていなければ、ログインの評価を行わない。
 			return true;
 		}
+
+		$users = (array) $this->rencon->conf()->users;
 
 		$login_id = $this->rencon->req()->get_param('login_id');
 		$login_pw = $this->rencon->req()->get_param('login_pw');
@@ -33,22 +32,22 @@ class rencon_login{
 		if( strlen( $login_try ) && strlen($login_id) && strlen($login_pw) ){
 			// ログイン評価
 			if( array_key_exists($login_id, $users) && $users[$login_id] == sha1($login_pw) ){
-				$this->rencon->req()->set_session('login_id', $login_id);
-				$this->rencon->req()->set_session('login_pw', sha1($login_pw));
+				$this->rencon->req()->set_session('rencon_ses_login_id', $login_id);
+				$this->rencon->req()->set_session('rencon_ses_login_pw', sha1($login_pw));
 				return true;
 			}
 		}
 
 
-		$login_id = $this->rencon->req()->get_session('login_id');
-		$login_pw_hash = $this->rencon->req()->get_session('login_pw');
+		$login_id = $this->rencon->req()->get_session('rencon_ses_login_id');
+		$login_pw_hash = $this->rencon->req()->get_session('rencon_ses_login_pw');
 		if( strlen($login_id) && strlen($login_pw_hash) ){
 			// ログイン済みか評価
 			if( array_key_exists($login_id, $users) && $users[$login_id] == $login_pw_hash ){
 				return true;
 			}
-			$this->rencon->req()->delete_session('login_id');
-			$this->rencon->req()->delete_session('login_pw');
+			$this->rencon->req()->delete_session('rencon_ses_login_id');
+			$this->rencon->req()->delete_session('rencon_ses_login_pw');
 			$this->rencon->forbidden();
 			exit;
 		}
@@ -102,8 +101,8 @@ PW: <input type="password" name="login_pw" value="" class="form-element" />
 	 * ログアウトして終了する
 	 */
 	public function logout(){
-		$this->rencon->req()->delete_session('login_id');
-		$this->rencon->req()->delete_session('login_pw');
+		$this->rencon->req()->delete_session('rencon_ses_login_id');
+		$this->rencon->req()->delete_session('rencon_ses_login_pw');
 
 		header('Content-type: text/html');
 		ob_start();
