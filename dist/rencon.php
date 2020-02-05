@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-05T03:03:01+00:00 --
+  -- developers preview build @2020-02-05T03:17:50+00:00 --
 --------------------- */
 
 // =-=-=-=-=-=-=-=-=-=-=-= Configuration START =-=-=-=-=-=-=-=-=-=-=-=
@@ -11,7 +11,7 @@ $conf = new stdClass();
 
 
 /* --------------------------------------
- * ログインユーザーのIDとパスワードの対を設定します。
+ * ログインユーザーのIDとパスワードの対
  * 
  * rencon の初期画面は、ログイン画面から始まります。
  * `$conf->users` に 登録されたユーザーが、ログインを許可されます。
@@ -38,7 +38,7 @@ $conf->disabled = array(
 );
 
 /* --------------------------------------
- * データベースの接続情報を設定します。
+ * データベースの接続情報
  */
 $conf->databases = array(
 
@@ -86,6 +86,20 @@ $conf->databases = array(
 		"options" => array(),
 	), /* */
 
+);
+
+
+
+/* --------------------------------------
+ * 表示させないファイルの一覧
+ */
+$conf->files_paths_invisible = array();
+
+/* --------------------------------------
+ * 編集できなくするファイルの一覧
+ */
+$conf->files_paths_readonly = array(
+	'/*',
 );
 
 
@@ -255,6 +269,8 @@ class rencon_conf{
 	public $users;
 	public $disabled;
 	public $databases;
+	public $files_paths_invisible;
+	public $files_paths_readonly;
 
 	/**
 	 * Constructor
@@ -282,6 +298,21 @@ class rencon_conf{
 		if( property_exists( $conf, 'databases' ) && !is_null( $conf->databases ) ){
 			$this->databases = (array) $conf->databases;
 		}
+
+		// --------------------------------------
+		// $conf->files_paths_invisible
+		$this->files_paths_invisible = null;
+		if( property_exists( $conf, 'files_paths_invisible' ) && !is_null( $conf->files_paths_invisible ) ){
+			$this->files_paths_invisible = (array) $conf->files_paths_invisible;
+		}
+
+		// --------------------------------------
+		// $conf->files_paths_readonly
+		$this->files_paths_readonly = null;
+		if( property_exists( $conf, 'files_paths_readonly' ) && !is_null( $conf->files_paths_readonly ) ){
+			$this->files_paths_readonly = (array) $conf->files_paths_readonly;
+		}
+
 	}
 
 	/**
@@ -326,6 +357,7 @@ class rencon_router{
 			return false;
 		}
 
+		// 利用制限の処理
 		$disabled = $this->rencon->conf()->disabled;
 		if( array_search($app, $disabled) !== false ){
 			$this->rencon->theme()->set_h1($app);
@@ -3023,11 +3055,8 @@ class rencon_apps_files_ctrl{
 		$remoteFinder = new rencon_vendor_tomk79_remoteFinder_main(array(
 			'default' => '/'
 		), array(
-			'paths_invisible' => array(
-			),
-			'paths_readonly' => array(
-				'/*',
-			),
+			'paths_invisible' => $this->rencon->conf()->files_paths_invisible,
+			'paths_readonly' => $this->rencon->conf()->files_paths_readonly,
 		));
 		$value = $remoteFinder->gpi( json_decode( $_REQUEST['data'] ) );
 		header('Content-type: text/json');

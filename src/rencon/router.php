@@ -28,6 +28,7 @@ class rencon_router{
 			return false;
 		}
 
+		// 利用制限の処理
 		$disabled = $this->rencon->conf()->disabled;
 		if( array_search($app, $disabled) !== false ){
 			$this->rencon->theme()->set_h1($app);

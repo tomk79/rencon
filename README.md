@@ -133,6 +133,21 @@ $conf->databases = array(
 ```
 
 
+### 表示させないファイルの一覧
+
+```php
+$conf->files_paths_invisible = array();
+```
+
+### 編集できなくするファイルの一覧
+
+```php
+$conf->files_paths_readonly = array(
+	'/*',
+);
+```
+
+
 
 ## システム要件 - System Requirement
 

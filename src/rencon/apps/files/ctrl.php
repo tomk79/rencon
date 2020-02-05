@@ -33,11 +33,8 @@ class rencon_apps_files_ctrl{
 		$remoteFinder = new rencon_vendor_tomk79_remoteFinder_main(array(
 			'default' => '/'
 		), array(
-			'paths_invisible' => array(
-			),
-			'paths_readonly' => array(
-				'/*',
-			),
+			'paths_invisible' => $this->rencon->conf()->files_paths_invisible,
+			'paths_readonly' => $this->rencon->conf()->files_paths_readonly,
 		));
 		$value = $remoteFinder->gpi( json_decode( $_REQUEST['data'] ) );
 		header('Content-type: text/json');
