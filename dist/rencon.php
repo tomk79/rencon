@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-05T02:55:12+00:00 --
+  -- developers preview build @2020-02-05T03:03:01+00:00 --
 --------------------- */
 
 // =-=-=-=-=-=-=-=-=-=-=-= Configuration START =-=-=-=-=-=-=-=-=-=-=-=
@@ -3024,11 +3024,9 @@ class rencon_apps_files_ctrl{
 			'default' => '/'
 		), array(
 			'paths_invisible' => array(
-				'/invisibles/*',
-				'*.hide'
 			),
 			'paths_readonly' => array(
-				'/readonly/*',
+				'/*',
 			),
 		));
 		$value = $remoteFinder->gpi( json_decode( $_REQUEST['data'] ) );
@@ -3177,9 +3175,7 @@ if( !is_array($results) || !count($results) ){
 <?php return ob_get_clean();
 }
 if( $app == 'files' && $act == 'index' ){
-ob_start(); ?><p>files app のビューです。</p>
-
-<div id="finder1"></div>
+ob_start(); ?><div id="finder1"></div>
 
 <link rel="stylesheet" href="?res=remote-finder/remote-finder.css" />
 <script src="?res=remote-finder/remote-finder.js"></script>
@@ -3188,12 +3184,12 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 	document.getElementById('finder1'),
 	{
 		"gpiBridge": function(input, callback){ // required
-			console.log(input);
+			// console.log(input);
 			var data = {
 				'data': JSON.stringify(input)
 			};
 			var dataBody = Object.keys(data).map(function(key){ return key+"="+ encodeURIComponent(data[key]) }).join("&")
-			console.log(dataBody);
+			// console.log(dataBody);
 			fetch("?a=files.rfgpi", {
 				method: "post",
 				headers: {
@@ -3212,12 +3208,12 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 					});
 				}
 			}).catch(function (response) {
-				console.log(response);
+				// console.log(response);
 				callback(response);
 			});
 		},
 		"open": function(fileinfo, callback){
-			alert('ファイル ' + fileinfo.path + ' を開きました。');
+			alert('ファイル ' + fileinfo.path + ' を開こうとしています。この機能は開発中のため利用できません。');
 			callback(true);
 		},
 		"mkdir": function(current_dir, callback){
@@ -3238,7 +3234,7 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 			return;
 		},
 		"remove": function(path_target, callback){
-			if( !confirm('Really?') ){
+			if( !confirm(path_target + 'を削除しようとしています。 本当に削除してよろしいですか？') ){
 				return;
 			}
 			callback();
@@ -3259,7 +3255,7 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 	}
 );
 // console.log(remoteFinder);
-remoteFinder.init('/', {}, function(){
+remoteFinder.init(<?= var_export(__DIR__, true) ?>, {}, function(){
 	console.log('ready.');
 });
 </script>

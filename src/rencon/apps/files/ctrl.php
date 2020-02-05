@@ -34,11 +34,9 @@ class rencon_apps_files_ctrl{
 			'default' => '/'
 		), array(
 			'paths_invisible' => array(
-				'/invisibles/*',
-				'*.hide'
 			),
 			'paths_readonly' => array(
-				'/readonly/*',
+				'/*',
 			),
 		));
 		$value = $remoteFinder->gpi( json_decode( $_REQUEST['data'] ) );
