@@ -23,34 +23,49 @@ $conf->users = array(
  * データベースの接続情報を設定します。
  */
 $conf->databases = array(
-	"main_sample" => array(
+
+	/* 設定例: SQLite
+	 */
+	/* *
+	"sqlite_sample" => array(
 		"driver" => "sqlite",
 		"database" => "database.db",
-	),
-	"sqlite_memory_sample" => array(
-		"driver" => "sqlite",
-		"database" => ":memory:",
-	),
-	"dsn_sample" => array(
-		"dsn" => "sqlite::memory:",
-		"username" => null,
-		"password" => null,
-		"options" => array(),
-	),
-	"db2_mysql_sample" => array(
+	), /* */
+
+	/* 設定例: MySQL
+	 */
+	/* *
+	"mysql_sample" => array(
 		"driver" => "mysql",
 		"host" => "127.0.0.1",
 		"port" => 3306,
 		"database" => "dbname",
 		"username" => "user",
 		"password" => "passwd",
-	),
-	"db3_pgsql_sample" => array(
+	), /* */
+
+	/* 設定例: PostgreSQL
+	 */
+	/* *
+	"pgsql_sample" => array(
 		"driver" => "pgsql",
 		"host" => "127.0.0.1",
 		"port" => 5432,
 		"database" => "dbname",
 		"username" => "user",
 		"password" => "passwd",
-	),
+	), /* */
+
+	/* 設定例: DSN
+	 * `dsn` を直接設定することもできます。
+	 * 設定方法は、PHP の PDOマニュアルを参照してください。
+	 */
+	/* *
+	"dsn_sample" => array(
+		"dsn" => "sqlite::memory:",
+		"username" => null,
+		"password" => null,
+		"options" => array(),
+	), /* */
+
 );
