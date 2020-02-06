@@ -177,6 +177,10 @@ $conf->files_paths_readonly = array(
 
 ## 更新履歴 - Change log
 
+### rencon v0.0.2 (リリース日未定)
+
+- ????????????
+
 ### rencon v0.0.1 (2020年2月7日)
 
 - Initial Release.
