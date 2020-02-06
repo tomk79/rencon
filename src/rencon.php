@@ -132,6 +132,13 @@ class rencon{
 	}
 
 	/**
+	 * Resource Manager Object
+	 */
+	public function resourceMgr(){
+		return $this->resourceMgr;
+	}
+
+	/**
 	 * Theme Object
 	 */
 	public function theme(){

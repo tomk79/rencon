@@ -30,28 +30,53 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 		},
 		"open": function(fileinfo, callback){
 			console.log(fileinfo);
-			// alert('ファイル ' + fileinfo.path + ' を開こうとしています。');
-			var data = {
-				'path_file': fileinfo.path
-			};
-			var dataBody = Object.keys(data).map(function(key){ return key+"="+ encodeURIComponent(data[key]) }).join("&")
-			console.log(dataBody);
-			fetch("?a=files.getfile", {
-				method: "post",
-				headers: {
-					'content-type': 'application/x-www-form-urlencoded'
-				},
-				body: dataBody
-			}).then(function (response) {
-				response.json().then(function(json){
-					console.log(json);
-					window.open('data:'+json.mime+';base64,'+json.base64);
-					callback(true);
-				});
-			}).catch(function (response) {
-				console.error(response);
-				callback(false);
+
+			var templateSrc = atob(<?= var_export(base64_encode($this->rencon->resourceMgr()->get('templates/modal.html')), true) ?>);
+			var $modal = $(templateSrc);
+			// alert(templateSrc);
+			var $okBtn = $('<button type="button" class="btn btn-primary">OK</button>');
+			var $modalFooter = $modal.find('.modal-footer');
+			$modalFooter.append($okBtn);
+
+			$okBtn.on('click', function(){
+				$modal.modal('hide');
 			});
+
+			$modal.on('hidden.bs.modal', function(){
+				$modal.remove();
+			});
+
+			$modal.on('shown.bs.modal', function(){
+				var data = {
+					'path_file': fileinfo.path
+				};
+				var dataBody = Object.keys(data).map(function(key){ return key+"="+ encodeURIComponent(data[key]) }).join("&")
+				console.log(dataBody);
+				fetch("?a=files.getfile", {
+					method: "post",
+					headers: {
+						'content-type': 'application/x-www-form-urlencoded'
+					},
+					body: dataBody
+				}).then(function (response) {
+					response.json().then(function(json){
+						console.log(json);
+						var $pre = $('<pre>');
+						$pre.text( atob(json.base64) );
+						$modal.find('.modal-body').append($pre);
+						$modal.find('.modal-title').text(json.basename);
+						// window.open('data:'+json.mime+';base64,'+json.base64);
+						callback(true);
+					});
+				}).catch(function (response) {
+					console.error(response);
+					callback(false);
+				});
+			});
+
+			$('body').append($modal);
+			$modal.modal({});
+			return;
 		},
 		"mkdir": function(current_dir, callback){
 			var foldername = prompt('Folder name:');

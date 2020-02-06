@@ -66,6 +66,7 @@ class rencon_apps_files_ctrl{
 		$value = array(
 			'result' => null,
 			'message' => null,
+			'basename' => null,
 			'ext' => null,
 			'mime' => null,
 			'base64' => null,
@@ -91,11 +92,12 @@ class rencon_apps_files_ctrl{
 			exit;
 		}
 
+		$value['basename'] = basename( $path_file );
 		$value['base64'] = base64_encode( file_get_contents( $realpath_file ) );
 		if( preg_match( '/^.*\.([a-zA-Z0-9\_\-]*?)$/si', $realpath_file, $matched ) ){
 			$value['ext'] = strtolower($matched[1]);
 		}
-		$value['mime'] = $this->get_mime_type( $value['ext'] );
+		$value['mime'] = $this->rencon->resourceMgr()->get_mime_type( $value['ext'] );
 		$value['result'] = true;
 		$value['message'] = 'OK';
 
@@ -104,50 +106,5 @@ class rencon_apps_files_ctrl{
 		exit;
 	}
 
-	/**
-	 * 拡張子から mime-type を得る
-	 */
-	private function get_mime_type($ext){
-		switch( $ext ){
-			case 'html':
-			case 'htm':
-				return 'text/html';
-				break;
-			case 'js':
-				return 'text/javascript';
-				break;
-			case 'css':
-			case 'scss':
-				return 'text/css';
-				break;
-			case 'gif':
-				return 'image/gif';
-				break;
-			case 'png':
-				return 'image/png';
-				break;
-			case 'jpg':
-			case 'jpeg':
-			case 'jpe':
-				return 'image/jpeg';
-				break;
-			case 'svg':
-				return 'image/svg+xml ';
-				break;
-			case 'text':
-			case 'txt':
-			case 'log':
-			case 'sh':
-			case 'bat':
-			case 'php':
-			case 'json':
-			case 'yml':
-			case 'yml':
-			case 'htaccess':
-				return 'text/plain';
-				break;
-		}
-		return false;
-	}
 }
 ?>

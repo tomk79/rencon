@@ -19,15 +19,9 @@ class rencon_resourceMgr{
 		if( preg_match('/\.([a-zA-Z0-9\_\-]*)$/', $path, $matched) ){
 			$ext = $matched[1];
 			$ext = strtolower($ext);
-			switch( $ext ){
-				case 'html': case 'htm': header('Content-type: text/html'); break;
-				case 'js': header('Content-type: text/javascript'); break;
-				case 'css': header('Content-type: text/css'); break;
-				case 'jpg': case 'jpe': case 'jpeg': header('Content-type: image/jpeg'); break;
-				case 'gif': header('Content-type: image/gif'); break;
-				case 'png': header('Content-type: image/png'); break;
-				case 'svg': header('Content-type: image/svg+xml'); break;
-			}
+			$mime = $this->get_mime_type($ext);
+			if( !$mime ){ $mime = 'text/html'; }
+			header('Content-type: '.$mime);
 		}
 		echo $this->get($path);
 		exit;
@@ -41,6 +35,52 @@ class rencon_resourceMgr{
 
 /** {$resourceList} **/
 
+		return false;
+	}
+
+	/**
+	 * 拡張子から mime-type を得る
+	 */
+	public function get_mime_type($ext){
+		switch( $ext ){
+			case 'html':
+			case 'htm':
+				return 'text/html';
+				break;
+			case 'js':
+				return 'text/javascript';
+				break;
+			case 'css':
+			case 'scss':
+				return 'text/css';
+				break;
+			case 'gif':
+				return 'image/gif';
+				break;
+			case 'png':
+				return 'image/png';
+				break;
+			case 'jpg':
+			case 'jpeg':
+			case 'jpe':
+				return 'image/jpeg';
+				break;
+			case 'svg':
+				return 'image/svg+xml ';
+				break;
+			case 'text':
+			case 'txt':
+			case 'log':
+			case 'sh':
+			case 'bat':
+			case 'php':
+			case 'json':
+			case 'yml':
+			case 'yml':
+			case 'htaccess':
+				return 'text/plain';
+				break;
+		}
 		return false;
 	}
 
