@@ -9,12 +9,17 @@
 <?php
 $results = $this->rencon->view()->get('result');
 $affectedRows = $this->rencon->view()->get('affectedRows');
+$lastInsertId = $this->rencon->view()->get('lastInsertId');
 ?>
 <p><?= intval($affectedRows) ?> 件に影響</p>
+<?php if( !is_null($lastInsertId) ){ ?>
+<p>Insert ID: <?= intval($lastInsertId) ?></p>
+<?php } ?>
 
 
 <?php
 if( !is_array($results) || !count($results) ){
+	echo '<div><p>No results</p></div>'."\n";
 
 }else{
 	echo '<div class="table-responsive">'."\n";
@@ -42,11 +47,26 @@ if( !is_array($results) || !count($results) ){
 	echo '</div>'."\n";
 	// var_dump( $results );
 }
+
 ?>
 
 
 <hr />
+PDO ERROR:
+<?php
+var_dump( $this->rencon->view()->get('pdo_error_info') );
+?>
+<hr />
+STH ERROR:
+<?php
+var_dump( $this->rencon->view()->get('pdo_sth_error_info') );
+?>
+<hr />
 <p>a = <?= htmlspecialchars( $this->rencon->req()->get_param('a') ); ?></p>
 <p>dbkey = <?= htmlspecialchars( $this->rencon->req()->get_param('dbkey') ); ?></p>
+<p>PDO Driver: <?= htmlspecialchars( $this->rencon->view()->get('pdo_driver_name') ) ?></p>
+<p>PDO Client Version: <?= htmlspecialchars( $this->rencon->view()->get('pdo_client_version') ) ?></p>
+<p>PDO Server Info: <?= htmlspecialchars( $this->rencon->view()->get('pdo_server_info') ) ?></p>
+<p>PDO Server Version: <?= htmlspecialchars( $this->rencon->view()->get('pdo_server_version') ) ?></p>
 <hr />
 <p><a href="?a=databases">戻る</a></p>

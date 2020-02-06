@@ -139,13 +139,13 @@ $conf->databases = array(
 $conf->files_path_root = '/';
 ```
 
-### 表示させないファイルの一覧
+### 表示させないパスのリスト
 
 ```php
 $conf->files_paths_invisible = array();
 ```
 
-### 編集できなくするファイルの一覧
+### 編集できなくするパスのリスト
 
 ```php
 $conf->files_paths_readonly = array(

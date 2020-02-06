@@ -50,19 +50,39 @@ class rencon_apps_databases_ctrl{
 			exit;
 		}
 
+		$this->rencon->view()->set('pdo_driver_name', $pdo->getAttribute(PDO::ATTR_DRIVER_NAME));
+		$this->rencon->view()->set('pdo_client_version', $pdo->getAttribute(PDO::ATTR_CLIENT_VERSION));
+		if( $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) !== 'sqlite' ){
+			$this->rencon->view()->set('pdo_server_info', $pdo->getAttribute(PDO::ATTR_SERVER_INFO));
+		}
+		$this->rencon->view()->set('pdo_server_version', $pdo->getAttribute(PDO::ATTR_SERVER_VERSION));
+
 		$sql = $this->rencon->req()->get_param('db_sql');
 		$sql = trim($sql);
 		$result = null;
 		$affectedRows = 0;
+		$lastInsertId = null;
+		$sthError = null;
 		if( strlen($sql) ){
 			$sth = $this->dbh->pdo()->query($sql);
 			if($sth){
 				$result = $sth->fetchAll(PDO::FETCH_ASSOC);
+				if( preg_match( '/^INSERT\s/si', trim($sql) ) ){
+					$lastInsertId = $pdo->lastInsertId();
+					if( $lastInsertId === false || $lastInsertId === "0" ){
+						$lastInsertId = null;
+					}
+				}
 				$affectedRows = $sth->rowCount();
+				$sthError = $sth->errorInfo();
 			}
 		}
 		$this->rencon->view()->set('result', $result);
 		$this->rencon->view()->set('affectedRows', $affectedRows);
+		$this->rencon->view()->set('lastInsertId', $lastInsertId);
+		$this->rencon->view()->set('pdo_error_info', $pdo->errorInfo());
+		$this->rencon->view()->set('pdo_sth_error_info', $sthError);
+		$this->rencon->view()->set('pdo', $pdo);
 
 		echo $this->rencon->theme()->bind(
 			$this->rencon->view()->bind()
