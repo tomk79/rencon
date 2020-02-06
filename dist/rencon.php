@@ -1,8 +1,7 @@
 <?php
 /* ---------------------
-  rencon v0.0.1-alpha.1+dev
+  rencon v0.0.1
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-06T15:43:18+00:00 --
 --------------------- */
 
 // =-=-=-=-=-=-=-=-=-=-=-= Configuration START =-=-=-=-=-=-=-=-=-=-=-=
