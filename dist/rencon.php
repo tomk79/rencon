@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-05T03:17:50+00:00 --
+  -- developers preview build @2020-02-06T04:38:54+00:00 --
 --------------------- */
 
 // =-=-=-=-=-=-=-=-=-=-=-= Configuration START =-=-=-=-=-=-=-=-=-=-=-=
@@ -89,6 +89,11 @@ $conf->databases = array(
 );
 
 
+
+/* --------------------------------------
+ * ファイル一覧のルートディレクトリ
+ */
+$conf->files_path_root = '/';
 
 /* --------------------------------------
  * 表示させないファイルの一覧
@@ -269,6 +274,7 @@ class rencon_conf{
 	public $users;
 	public $disabled;
 	public $databases;
+	public $files_path_root;
 	public $files_paths_invisible;
 	public $files_paths_readonly;
 
@@ -297,6 +303,13 @@ class rencon_conf{
 		$this->databases = null;
 		if( property_exists( $conf, 'databases' ) && !is_null( $conf->databases ) ){
 			$this->databases = (array) $conf->databases;
+		}
+
+		// --------------------------------------
+		// $conf->files_path_root
+		$this->files_path_root = realpath('/');
+		if( property_exists( $conf, 'files_path_root' ) && is_string( $conf->files_path_root ) ){
+			$this->files_path_root = $conf->files_path_root;
 		}
 
 		// --------------------------------------
@@ -3041,6 +3054,15 @@ class rencon_apps_files_ctrl{
 	 */
 	public function index(){
 		$this->rencon->theme()->set_h1('ファイルとフォルダ');
+		$path_root = $this->rencon->conf()->files_path_root;
+		$realpath_root = realpath($path_root);
+
+		if( !is_dir( $realpath_root ) ){
+			echo $this->rencon->theme()->bind(
+				'<p>ルートディレクトリ '.htmlspecialchars($path_root).' は存在しないか、ディレクトリではありません。</p>'
+			);
+			exit;
+		}
 
 		echo $this->rencon->theme()->bind(
 			$this->rencon->view()->bind()
@@ -3052,8 +3074,11 @@ class rencon_apps_files_ctrl{
 	 * remoteFinder GPI
 	 */
 	public function rfgpi(){
+		$path_root = $this->rencon->conf()->files_path_root;
+		$realpath_root = realpath($path_root);
+
 		$remoteFinder = new rencon_vendor_tomk79_remoteFinder_main(array(
-			'default' => '/'
+			'default' => $realpath_root,
 		), array(
 			'paths_invisible' => $this->rencon->conf()->files_paths_invisible,
 			'paths_readonly' => $this->rencon->conf()->files_paths_readonly,
@@ -3284,7 +3309,13 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 	}
 );
 // console.log(remoteFinder);
-remoteFinder.init(<?= var_export(__DIR__, true) ?>, {}, function(){
+<?php
+$current_dir = __DIR__;
+if( realpath($this->rencon->conf()->files_path_root) !== realpath('/') ){
+	$current_dir = '/';
+}
+?>
+remoteFinder.init(<?= var_export($current_dir, true) ?>, {}, function(){
 	console.log('ready.');
 });
 </script>

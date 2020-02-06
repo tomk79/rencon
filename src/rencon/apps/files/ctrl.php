@@ -19,6 +19,15 @@ class rencon_apps_files_ctrl{
 	 */
 	public function index(){
 		$this->rencon->theme()->set_h1('ファイルとフォルダ');
+		$path_root = $this->rencon->conf()->files_path_root;
+		$realpath_root = realpath($path_root);
+
+		if( !is_dir( $realpath_root ) ){
+			echo $this->rencon->theme()->bind(
+				'<p>ルートディレクトリ '.htmlspecialchars($path_root).' は存在しないか、ディレクトリではありません。</p>'
+			);
+			exit;
+		}
 
 		echo $this->rencon->theme()->bind(
 			$this->rencon->view()->bind()
@@ -30,8 +39,11 @@ class rencon_apps_files_ctrl{
 	 * remoteFinder GPI
 	 */
 	public function rfgpi(){
+		$path_root = $this->rencon->conf()->files_path_root;
+		$realpath_root = realpath($path_root);
+
 		$remoteFinder = new rencon_vendor_tomk79_remoteFinder_main(array(
-			'default' => '/'
+			'default' => $realpath_root,
 		), array(
 			'paths_invisible' => $this->rencon->conf()->files_paths_invisible,
 			'paths_readonly' => $this->rencon->conf()->files_paths_readonly,

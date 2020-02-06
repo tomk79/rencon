@@ -78,7 +78,13 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 	}
 );
 // console.log(remoteFinder);
-remoteFinder.init(<?= var_export(__DIR__, true) ?>, {}, function(){
+<?php
+$current_dir = __DIR__;
+if( realpath($this->rencon->conf()->files_path_root) !== realpath('/') ){
+	$current_dir = '/';
+}
+?>
+remoteFinder.init(<?= var_export($current_dir, true) ?>, {}, function(){
 	console.log('ready.');
 });
 </script>

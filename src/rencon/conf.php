@@ -9,6 +9,7 @@ class rencon_conf{
 	public $users;
 	public $disabled;
 	public $databases;
+	public $files_path_root;
 	public $files_paths_invisible;
 	public $files_paths_readonly;
 
@@ -37,6 +38,13 @@ class rencon_conf{
 		$this->databases = null;
 		if( property_exists( $conf, 'databases' ) && !is_null( $conf->databases ) ){
 			$this->databases = (array) $conf->databases;
+		}
+
+		// --------------------------------------
+		// $conf->files_path_root
+		$this->files_path_root = realpath('/');
+		if( property_exists( $conf, 'files_path_root' ) && is_string( $conf->files_path_root ) ){
+			$this->files_path_root = $conf->files_path_root;
 		}
 
 		// --------------------------------------

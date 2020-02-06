@@ -133,6 +133,12 @@ $conf->databases = array(
 ```
 
 
+### ファイル一覧のルートディレクトリ
+
+```php
+$conf->files_path_root = '/';
+```
+
 ### 表示させないファイルの一覧
 
 ```php
