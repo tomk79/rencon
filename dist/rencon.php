@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-06T11:20:43+00:00 --
+  -- developers preview build @2020-02-06T15:43:18+00:00 --
 --------------------- */
 
 // =-=-=-=-=-=-=-=-=-=-=-= Configuration START =-=-=-=-=-=-=-=-=-=-=-=
@@ -3262,6 +3262,8 @@ class rencon_apps_files_ctrl{
 			'ext' => null,
 			'mime' => null,
 			'base64' => null,
+			'size' => null,
+			'charset' => null,
 		);
 
 		$realpath_file = realpath($realpath_root.'/'.$path_file);
@@ -3285,11 +3287,17 @@ class rencon_apps_files_ctrl{
 		}
 
 		$value['basename'] = basename( $path_file );
-		$value['base64'] = base64_encode( file_get_contents( $realpath_file ) );
+		$value['size'] = filesize( $realpath_file );
+		$bin = file_get_contents( $realpath_file );
+		if( is_callable( 'mb_detect_encoding' ) ){
+			$value['charset'] = mb_detect_encoding($bin, 'UTF-8,SJIS-win,SJIS,eucJP-win,EUC-JP,JIS');
+		}
+		$value['base64'] = base64_encode( $bin );
 		if( preg_match( '/^.*\.([a-zA-Z0-9\_\-]*?)$/si', $realpath_file, $matched ) ){
 			$value['ext'] = strtolower($matched[1]);
 		}
 		$value['mime'] = $this->rencon->resourceMgr()->get_mime_type( $value['ext'] );
+		if( !$value['mime'] ){ $value['mime'] = 'text/html'; }
 		$value['result'] = true;
 		$value['message'] = 'OK';
 
@@ -3577,10 +3585,16 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 				}).then(function (response) {
 					response.json().then(function(json){
 						console.log(json);
-						var $pre = $('<pre>');
-						$pre.text( atob(json.base64) );
-						$modal.find('.modal-body').append($pre);
 						$modal.find('.modal-title').text(json.basename);
+						if(json.mime.match( /^image\//i )){
+							var $div = $('<div><img /></div>');
+							$div.find('img').attr( 'src', 'data:'+json.mime+';base64,'+json.base64 ).css({'width': '100%'});
+							$modal.find('.modal-body').append($div);
+						}else{
+							var $pre = $('<pre><code></code></pre>');
+							$pre.find('code').text( decodeURIComponent( escape( atob(json.base64) ) ) );
+							$modal.find('.modal-body').append($pre);
+						}
 						// window.open('data:'+json.mime+';base64,'+json.base64);
 						callback(true);
 					});

@@ -61,10 +61,16 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 				}).then(function (response) {
 					response.json().then(function(json){
 						console.log(json);
-						var $pre = $('<pre>');
-						$pre.text( atob(json.base64) );
-						$modal.find('.modal-body').append($pre);
 						$modal.find('.modal-title').text(json.basename);
+						if(json.mime.match( /^image\//i )){
+							var $div = $('<div><img /></div>');
+							$div.find('img').attr( 'src', 'data:'+json.mime+';base64,'+json.base64 ).css({'width': '100%'});
+							$modal.find('.modal-body').append($div);
+						}else{
+							var $pre = $('<pre><code></code></pre>');
+							$pre.find('code').text( decodeURIComponent( escape( atob(json.base64) ) ) );
+							$modal.find('.modal-body').append($pre);
+						}
 						// window.open('data:'+json.mime+';base64,'+json.base64);
 						callback(true);
 					});

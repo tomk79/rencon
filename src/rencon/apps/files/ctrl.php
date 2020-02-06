@@ -70,6 +70,8 @@ class rencon_apps_files_ctrl{
 			'ext' => null,
 			'mime' => null,
 			'base64' => null,
+			'size' => null,
+			'charset' => null,
 		);
 
 		$realpath_file = realpath($realpath_root.'/'.$path_file);
@@ -93,11 +95,17 @@ class rencon_apps_files_ctrl{
 		}
 
 		$value['basename'] = basename( $path_file );
-		$value['base64'] = base64_encode( file_get_contents( $realpath_file ) );
+		$value['size'] = filesize( $realpath_file );
+		$bin = file_get_contents( $realpath_file );
+		if( is_callable( 'mb_detect_encoding' ) ){
+			$value['charset'] = mb_detect_encoding($bin, 'UTF-8,SJIS-win,SJIS,eucJP-win,EUC-JP,JIS');
+		}
+		$value['base64'] = base64_encode( $bin );
 		if( preg_match( '/^.*\.([a-zA-Z0-9\_\-]*?)$/si', $realpath_file, $matched ) ){
 			$value['ext'] = strtolower($matched[1]);
 		}
 		$value['mime'] = $this->rencon->resourceMgr()->get_mime_type( $value['ext'] );
+		if( !$value['mime'] ){ $value['mime'] = 'text/html'; }
 		$value['result'] = true;
 		$value['message'] = 'OK';
 
