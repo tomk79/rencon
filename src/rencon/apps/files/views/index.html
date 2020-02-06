@@ -20,24 +20,38 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 				},
 				body: dataBody
 			}).then(function (response) {
-				var contentType = response.headers.get('content-type').toLowerCase();
-				if(contentType.indexOf('application/json') === 0 || contentType.indexOf('text/json') === 0) {
-					response.json().then(function(json){
-						callback(json);
-					});
-				} else {
-					response.text().then(function(text){
-						callback(text);
-					});
-				}
+				response.json().then(function(json){
+					callback(json);
+				});
 			}).catch(function (response) {
-				// console.log(response);
+				console.error(response);
 				callback(response);
 			});
 		},
 		"open": function(fileinfo, callback){
-			alert('ファイル ' + fileinfo.path + ' を開こうとしています。この機能は開発中のため利用できません。');
-			callback(true);
+			console.log(fileinfo);
+			// alert('ファイル ' + fileinfo.path + ' を開こうとしています。');
+			var data = {
+				'path_file': fileinfo.path
+			};
+			var dataBody = Object.keys(data).map(function(key){ return key+"="+ encodeURIComponent(data[key]) }).join("&")
+			console.log(dataBody);
+			fetch("?a=files.getfile", {
+				method: "post",
+				headers: {
+					'content-type': 'application/x-www-form-urlencoded'
+				},
+				body: dataBody
+			}).then(function (response) {
+				response.json().then(function(json){
+					console.log(json);
+					window.open('data:'+json.mime+';base64,'+json.base64);
+					callback(true);
+				});
+			}).catch(function (response) {
+				console.error(response);
+				callback(false);
+			});
 		},
 		"mkdir": function(current_dir, callback){
 			var foldername = prompt('Folder name:');
@@ -79,7 +93,7 @@ var remoteFinder = window.remoteFinder = new RemoteFinder(
 );
 // console.log(remoteFinder);
 <?php
-$current_dir = __DIR__;
+$current_dir = __DIR__.DIRECTORY_SEPARATOR;
 if( realpath($this->rencon->conf()->files_path_root) !== realpath('/') ){
 	$current_dir = '/';
 }

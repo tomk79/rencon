@@ -1,4 +1,4 @@
-<p>テーブル一覧です。</p>
+
 <form action="?a=databases.tables&amp;dbkey=<?= htmlspecialchars( $this->rencon->req()->get_param('dbkey') ); ?>" method="post">
 <textarea name="db_sql" class="form-control"><?= htmlspecialchars( $this->rencon->req()->get_param('db_sql') ); ?></textarea>
 <input type="submit" value="クエリを実行" class="btn btn-primary" />
