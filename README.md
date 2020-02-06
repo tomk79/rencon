@@ -59,7 +59,7 @@ GUIベースのウェブアプリケーションなので、普段コマンド�
 
 ```
 $ cd /path/to/your/htdocs/(foo)/(bar);
-$ curl https://raw.githubusercontent.com/tomk79/rencon/master/dist/rencon.php -o rencon.php;
+$ curl https://github.com/tomk79/rencon/releases/download/0.0.1/rencon.php -L -o rencon.php;
 ```
 
 テキストエディタで開き、適宜設定を書き換えます。(任意)
