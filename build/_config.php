@@ -25,6 +25,7 @@ $conf->users = array(
 $conf->disabled = array(
 	// 'databases',
 	// 'files',
+	// 'phpinfo',
 );
 
 /* --------------------------------------

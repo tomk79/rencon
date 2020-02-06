@@ -53,6 +53,7 @@ class rencon{
 <ul>
 	<li><a href="?a=databases">データベース管理</a></li>
 	<li><a href="?a=files">ファイルとフォルダ</a></li>
+	<li><a href="?a=phpinfo">phpinfo()</a></li>
 </ul>
 <?php
 			echo $this->theme->bind( ob_get_clean() );

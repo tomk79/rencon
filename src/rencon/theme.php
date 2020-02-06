@@ -53,14 +53,17 @@ class rencon_theme{
 
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item <?= array_search('', $class_active) ?>">
+					<!-- <li class="nav-item <?= array_search('', $class_active) ?>">
 						<a class="nav-link" href="<?= htmlspecialchars($this->rencon->href()); ?>">Home <span class="sr-only">(current)</span></a>
-					</li>
+					</li> -->
 					<li class="nav-item <?= array_search('databases', $class_active) ?>">
 						<a class="nav-link" href="?a=databases">Databases</a>
 					</li>
 					<li class="nav-item <?= array_search('files', $class_active) ?>">
 						<a class="nav-link" href="?a=files">Files</a>
+					</li>
+					<li class="nav-item <?= array_search('phpinfo', $class_active) ?>">
+						<a class="nav-link" href="?a=phpinfo">phpinfo</a>
 					</li>
 				</ul>
 			</div>

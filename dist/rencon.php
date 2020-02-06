@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-06T09:16:37+00:00 --
+  -- developers preview build @2020-02-06T09:22:52+00:00 --
 --------------------- */
 
 // =-=-=-=-=-=-=-=-=-=-=-= Configuration START =-=-=-=-=-=-=-=-=-=-=-=
@@ -35,6 +35,7 @@ $conf->users = array(
 $conf->disabled = array(
 	// 'databases',
 	// 'files',
+	// 'phpinfo',
 );
 
 /* --------------------------------------
@@ -171,6 +172,7 @@ class rencon{
 <ul>
 	<li><a href="?a=databases">データベース管理</a></li>
 	<li><a href="?a=files">ファイルとフォルダ</a></li>
+	<li><a href="?a=phpinfo">phpinfo()</a></li>
 </ul>
 <?php
 			echo $this->theme->bind( ob_get_clean() );
@@ -451,14 +453,17 @@ class rencon_theme{
 
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item <?= array_search('', $class_active) ?>">
+					<!-- <li class="nav-item <?= array_search('', $class_active) ?>">
 						<a class="nav-link" href="<?= htmlspecialchars($this->rencon->href()); ?>">Home <span class="sr-only">(current)</span></a>
-					</li>
+					</li> -->
 					<li class="nav-item <?= array_search('databases', $class_active) ?>">
 						<a class="nav-link" href="?a=databases">Databases</a>
 					</li>
 					<li class="nav-item <?= array_search('files', $class_active) ?>">
 						<a class="nav-link" href="?a=files">Files</a>
+					</li>
+					<li class="nav-item <?= array_search('phpinfo', $class_active) ?>">
+						<a class="nav-link" href="?a=phpinfo">phpinfo</a>
 					</li>
 				</ul>
 			</div>
@@ -3238,6 +3243,43 @@ class rencon_apps_files_ctrl{
 ?>
 <?php
 /**
+ * rencon app
+ *
+ * @author Tomoya Koyanagi <tomk79@gmail.com>
+ */
+class rencon_apps_phpinfo_ctrl{
+	private $rencon;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct( $rencon ){
+		$this->rencon = $rencon;
+	}
+
+	/**
+	 * デフォルトアクション
+	 */
+	public function index(){
+		$this->rencon->theme()->set_h1('phpinfo');
+		echo $this->rencon->theme()->bind(
+			$this->rencon->view()->bind()
+		);
+		exit;
+	}
+
+	/**
+	 * show
+	 */
+	public function show(){
+        phpinfo();
+        exit;
+	}
+
+}
+?>
+<?php
+/**
  * rencon views class
  *
  * @author Tomoya Koyanagi <tomk79@gmail.com>
@@ -3503,6 +3545,10 @@ remoteFinder.init(<?= var_export($current_dir, true) ?>, {}, function(){
 	console.log('ready.');
 });
 </script>
+<?php return ob_get_clean();
+}
+if( $app == 'phpinfo' && $act == 'index' ){
+ob_start(); ?><a href="?a=phpinfo.show" target="_blank">phpinfo() 画面を表示する</a>
 <?php return ob_get_clean();
 }
 

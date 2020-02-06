@@ -109,6 +109,7 @@ $conf->users = null;
 $conf->disabled = array(
 	'databases', // データベース操作を無効化
 	'files', // ファイルとフォルダ操作を無効化
+	'phpinfo', // phpinfo() の閲覧を無効化
 );
 ```
 
