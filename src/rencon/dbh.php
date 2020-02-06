@@ -122,5 +122,78 @@ class rencon_dbh{
 		}
 		return \PDO::getAvailableDrivers();
 	}
+
+	/**
+	 * DBドライバー名を得る
+	 */
+	public function get_driver_name(){
+		if( !$this->is_pdo_enabled() ){
+			return false;
+		}
+		if( !is_object($this->pdo) ){
+			return false;
+		}
+		return $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+	}
+
+	/**
+	 * テーブルの一覧を取得する
+	 */
+	public function get_table_list(){
+		if( !$this->is_pdo_enabled() ){
+			return false;
+		}
+		if( !is_object($this->pdo) ){
+			return false;
+		}
+		$driver_name = $this->get_driver_name();
+		$result = false;
+		if( $driver_name == 'sqlite' ){
+			$sth = $this->pdo->query("SELECT * FROM sqlite_master WHERE type='table'");
+			if($sth){
+				$tmp_result = $sth->fetchAll(PDO::FETCH_ASSOC);
+				$result = array();
+				foreach($tmp_result as $row){
+					$result[] = array(
+						'name' => $row['name'],
+					);
+				}
+			}
+		}elseif( $driver_name == 'mysql' ){
+			$sth = $this->pdo->query("SHOW TABLES");
+			if($sth){
+				$tmp_result = $sth->fetchAll(PDO::FETCH_ASSOC);
+				$result = array();
+				foreach($tmp_result as $row){
+					foreach($row as $tableName){
+						$result[] = array(
+							'name' => $tableName,
+						);
+						break;
+					}
+				}
+			}
+		}elseif( $driver_name == 'pgsql' ){
+			$sth = $this->pdo->query("SELECT * FROM pg_stat_user_tables");
+			if($sth){
+				$tmp_result = $sth->fetchAll(PDO::FETCH_ASSOC);
+				$result = array();
+				foreach($tmp_result as $row){
+					$result[] = array(
+						'name' => $row['relname'],
+					);
+				}
+			}
+		}
+
+		uasort($result, function ($a, $b) {
+			if ($a['name'] == $b['name']) {
+				return 0;
+			}
+			return ($a['name'] < $b['name']) ? -1 : 1;
+		});
+
+		return $result;
+	}
 }
 ?>

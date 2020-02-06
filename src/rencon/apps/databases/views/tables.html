@@ -1,5 +1,5 @@
 <p>テーブル一覧です。</p>
-<form action="?a=databases.tables&dbkey=<?= htmlspecialchars( $this->rencon->req()->get_param('dbkey') ); ?>" method="post">
+<form action="?a=databases.tables&amp;dbkey=<?= htmlspecialchars( $this->rencon->req()->get_param('dbkey') ); ?>" method="post">
 <textarea name="db_sql" class="form-control"><?= htmlspecialchars( $this->rencon->req()->get_param('db_sql') ); ?></textarea>
 <input type="submit" value="クエリを実行" class="btn btn-primary" />
 </form>
@@ -51,6 +51,22 @@ if( !is_array($results) || !count($results) ){
 ?>
 
 
+<hr />
+TableList:
+<?php
+$table_list = $this->rencon->view()->get('table_list');
+// var_dump( $table_list );
+$driver_name = $this->rencon->view()->get('pdo_driver_name');
+if( is_array( $table_list ) && count($table_list) ){
+	echo '<ul>'."\n";
+	foreach($table_list as $table_info){
+		echo '<li>'."\n";
+		echo '<a href="?a=databases.tables&amp;dbkey='.htmlspecialchars($this->rencon->req()->get_param('dbkey')).'&amp;db_sql='.htmlspecialchars(urlencode('SELECT * FROM '.$table_info['name'].' '.($driver_name=='pgsql' ? 'LIMIT 10 OFFSET 0' : 'LIMIT 0,10').';')).'">'.htmlspecialchars($table_info['name']).'</a>'."\n";
+		echo '</li>'."\n";
+	}
+	echo '</ul>'."\n";
+}
+?>
 <hr />
 PDO ERROR:
 <?php

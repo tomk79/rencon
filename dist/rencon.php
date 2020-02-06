@@ -2,7 +2,7 @@
 /* ---------------------
   rencon v0.0.1-alpha.1+dev
   (C)Tomoya Koyanagi
-  -- developers preview build @2020-02-06T07:00:47+00:00 --
+  -- developers preview build @2020-02-06T09:16:37+00:00 --
 --------------------- */
 
 // =-=-=-=-=-=-=-=-=-=-=-= Configuration START =-=-=-=-=-=-=-=-=-=-=-=
@@ -2673,6 +2673,79 @@ class rencon_dbh{
 		}
 		return \PDO::getAvailableDrivers();
 	}
+
+	/**
+	 * DBドライバー名を得る
+	 */
+	public function get_driver_name(){
+		if( !$this->is_pdo_enabled() ){
+			return false;
+		}
+		if( !is_object($this->pdo) ){
+			return false;
+		}
+		return $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+	}
+
+	/**
+	 * テーブルの一覧を取得する
+	 */
+	public function get_table_list(){
+		if( !$this->is_pdo_enabled() ){
+			return false;
+		}
+		if( !is_object($this->pdo) ){
+			return false;
+		}
+		$driver_name = $this->get_driver_name();
+		$result = false;
+		if( $driver_name == 'sqlite' ){
+			$sth = $this->pdo->query("SELECT * FROM sqlite_master WHERE type='table'");
+			if($sth){
+				$tmp_result = $sth->fetchAll(PDO::FETCH_ASSOC);
+				$result = array();
+				foreach($tmp_result as $row){
+					$result[] = array(
+						'name' => $row['name'],
+					);
+				}
+			}
+		}elseif( $driver_name == 'mysql' ){
+			$sth = $this->pdo->query("SHOW TABLES");
+			if($sth){
+				$tmp_result = $sth->fetchAll(PDO::FETCH_ASSOC);
+				$result = array();
+				foreach($tmp_result as $row){
+					foreach($row as $tableName){
+						$result[] = array(
+							'name' => $tableName,
+						);
+						break;
+					}
+				}
+			}
+		}elseif( $driver_name == 'pgsql' ){
+			$sth = $this->pdo->query("SELECT * FROM pg_stat_user_tables");
+			if($sth){
+				$tmp_result = $sth->fetchAll(PDO::FETCH_ASSOC);
+				$result = array();
+				foreach($tmp_result as $row){
+					$result[] = array(
+						'name' => $row['relname'],
+					);
+				}
+			}
+		}
+
+		uasort($result, function ($a, $b) {
+			if ($a['name'] == $b['name']) {
+				return 0;
+			}
+			return ($a['name'] < $b['name']) ? -1 : 1;
+		});
+
+		return $result;
+	}
 }
 ?>
 <?php
@@ -3062,7 +3135,7 @@ class rencon_apps_databases_ctrl{
 			exit;
 		}
 
-		$this->rencon->view()->set('pdo_driver_name', $pdo->getAttribute(PDO::ATTR_DRIVER_NAME));
+		$this->rencon->view()->set('pdo_driver_name', $this->dbh->get_driver_name());
 		$this->rencon->view()->set('pdo_client_version', $pdo->getAttribute(PDO::ATTR_CLIENT_VERSION));
 		if( $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) !== 'sqlite' ){
 			$this->rencon->view()->set('pdo_server_info', $pdo->getAttribute(PDO::ATTR_SERVER_INFO));
@@ -3094,6 +3167,7 @@ class rencon_apps_databases_ctrl{
 		$this->rencon->view()->set('lastInsertId', $lastInsertId);
 		$this->rencon->view()->set('pdo_error_info', $pdo->errorInfo());
 		$this->rencon->view()->set('pdo_sth_error_info', $sthError);
+		$this->rencon->view()->set('table_list', $this->dbh->get_table_list());
 		$this->rencon->view()->set('pdo', $pdo);
 
 		echo $this->rencon->theme()->bind(
@@ -3249,7 +3323,7 @@ if( !class_exists('PDO') ){
 }
 if( $app == 'databases' && $act == 'tables' ){
 ob_start(); ?><p>テーブル一覧です。</p>
-<form action="?a=databases.tables&dbkey=<?= htmlspecialchars( $this->rencon->req()->get_param('dbkey') ); ?>" method="post">
+<form action="?a=databases.tables&amp;dbkey=<?= htmlspecialchars( $this->rencon->req()->get_param('dbkey') ); ?>" method="post">
 <textarea name="db_sql" class="form-control"><?= htmlspecialchars( $this->rencon->req()->get_param('db_sql') ); ?></textarea>
 <input type="submit" value="クエリを実行" class="btn btn-primary" />
 </form>
@@ -3301,6 +3375,22 @@ if( !is_array($results) || !count($results) ){
 ?>
 
 
+<hr />
+TableList:
+<?php
+$table_list = $this->rencon->view()->get('table_list');
+// var_dump( $table_list );
+$driver_name = $this->rencon->view()->get('pdo_driver_name');
+if( is_array( $table_list ) && count($table_list) ){
+	echo '<ul>'."\n";
+	foreach($table_list as $table_info){
+		echo '<li>'."\n";
+		echo '<a href="?a=databases.tables&amp;dbkey='.htmlspecialchars($this->rencon->req()->get_param('dbkey')).'&amp;db_sql='.htmlspecialchars(urlencode('SELECT * FROM '.$table_info['name'].' '.($driver_name=='pgsql' ? 'LIMIT 10 OFFSET 0' : 'LIMIT 0,10').';')).'">'.htmlspecialchars($table_info['name']).'</a>'."\n";
+		echo '</li>'."\n";
+	}
+	echo '</ul>'."\n";
+}
+?>
 <hr />
 PDO ERROR:
 <?php

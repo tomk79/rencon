@@ -50,7 +50,7 @@ class rencon_apps_databases_ctrl{
 			exit;
 		}
 
-		$this->rencon->view()->set('pdo_driver_name', $pdo->getAttribute(PDO::ATTR_DRIVER_NAME));
+		$this->rencon->view()->set('pdo_driver_name', $this->dbh->get_driver_name());
 		$this->rencon->view()->set('pdo_client_version', $pdo->getAttribute(PDO::ATTR_CLIENT_VERSION));
 		if( $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) !== 'sqlite' ){
 			$this->rencon->view()->set('pdo_server_info', $pdo->getAttribute(PDO::ATTR_SERVER_INFO));
@@ -82,6 +82,7 @@ class rencon_apps_databases_ctrl{
 		$this->rencon->view()->set('lastInsertId', $lastInsertId);
 		$this->rencon->view()->set('pdo_error_info', $pdo->errorInfo());
 		$this->rencon->view()->set('pdo_sth_error_info', $sthError);
+		$this->rencon->view()->set('table_list', $this->dbh->get_table_list());
 		$this->rencon->view()->set('pdo', $pdo);
 
 		echo $this->rencon->theme()->bind(
