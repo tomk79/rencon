@@ -4,7 +4,7 @@
  *
  * @author Tomoya Koyanagi <tomk79@gmail.com>
  */
-class rencon_apps_db_ctrl{
+class rencon_apps_databases_ctrl{
 	private $rencon;
 	private $dbh;
 
@@ -40,6 +40,14 @@ class rencon_apps_db_ctrl{
 		$this->rencon->view()->set('dbinfo', $dbinfo);
 		if( $dbinfo ){
 			$this->dbh->connect($dbkey);
+		}
+
+		$pdo = $this->dbh->pdo();
+		if( !is_object($pdo) ){
+			echo $this->rencon->theme()->bind(
+				'<p>DB接続に失敗しました。</p>'
+			);
+			exit;
 		}
 
 		$sql = $this->rencon->req()->get_param('db_sql');

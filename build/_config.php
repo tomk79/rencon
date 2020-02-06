@@ -23,7 +23,7 @@ $conf->users = array(
  * 無効にする機能
  */
 $conf->disabled = array(
-	// 'db',
+	// 'databases',
 	// 'files',
 );
 

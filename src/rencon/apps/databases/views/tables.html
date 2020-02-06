@@ -1,5 +1,5 @@
 <p>テーブル一覧です。</p>
-<form action="" method="post">
+<form action="?a=databases.tables&dbkey=<?= htmlspecialchars( $this->rencon->req()->get_param('dbkey') ); ?>" method="post">
 <textarea name="db_sql" class="form-control"><?= htmlspecialchars( $this->rencon->req()->get_param('db_sql') ); ?></textarea>
 <input type="submit" value="クエリを実行" class="btn btn-primary" />
 </form>
@@ -49,4 +49,4 @@ if( !is_array($results) || !count($results) ){
 <p>a = <?= htmlspecialchars( $this->rencon->req()->get_param('a') ); ?></p>
 <p>dbkey = <?= htmlspecialchars( $this->rencon->req()->get_param('dbkey') ); ?></p>
 <hr />
-<p><a href="?a=db">戻る</a></p>
+<p><a href="?a=databases">戻る</a></p>

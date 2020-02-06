@@ -107,7 +107,7 @@ $conf->users = null;
 
 ```php
 $conf->disabled = array(
-	'db', // データベース操作を無効化
+	'databases', // データベース操作を無効化
 	'files', // ファイルとフォルダ操作を無効化
 );
 ```

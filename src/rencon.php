@@ -51,7 +51,7 @@ class rencon{
 			$this->theme->set_h1('ホーム');
 			ob_start(); ?>
 <ul>
-	<li><a href="?a=db">データベース管理</a></li>
+	<li><a href="?a=databases">データベース管理</a></li>
 	<li><a href="?a=files">ファイルとフォルダ</a></li>
 </ul>
 <?php

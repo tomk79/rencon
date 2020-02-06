@@ -1,0 +1,26 @@
+<?php
+
+if( !class_exists('PDO') ){
+	echo '<p>PDOが利用できません。</p>';
+}else{
+	$conf = $this->rencon->conf();
+	// var_dump($conf);
+	if( !is_array($conf->databases) || !count($conf->databases) ){
+		echo '<p>データベース接続先が設定されていません。</p>';
+	}else{
+		echo '<ul>'."\n";
+		foreach($conf->databases as $dbkey=>$dbinfo){
+			echo '<li>';
+			echo '<a href="?a=databases.tables&dbkey='.urlencode($dbkey).'">'.htmlspecialchars($dbkey).'</a>';
+			echo '</li>'."\n";
+
+		}
+		echo '</ul>'."\n";
+	}
+
+	$drivers = $this->get('dbh')->get_available_drivers();
+	echo '<p>PDO supports: '.implode(', ', $drivers).'</p>';
+}
+
+
+?>
