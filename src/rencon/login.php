@@ -34,6 +34,7 @@ class rencon_login{
 			if( array_key_exists($login_id, $users) && $users[$login_id] == sha1($login_pw) ){
 				$this->rencon->req()->set_session('rencon_ses_login_id', $login_id);
 				$this->rencon->req()->set_session('rencon_ses_login_pw', sha1($login_pw));
+				header('Location: ?a='.urlencode($this->rencon->req()->get_param('a')));
 				return true;
 			}
 		}
@@ -86,7 +87,7 @@ ID: <input type="text" name="login_id" value="" class="form-element" />
 PW: <input type="password" name="login_pw" value="" class="form-element" />
 <input type="submit" value="Login" class="btn btn-primary" />
 <input type="hidden" name="login_try" value="1" />
-<input type="hidden" name="a" value="<?= htmlspecialchars($this->rencon->action()) ?>" />
+<input type="hidden" name="a" value="<?= htmlspecialchars($this->rencon->req()->get_param('a')) ?>" />
 			</form>
 		</div>
 	</body>
